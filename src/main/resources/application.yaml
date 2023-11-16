@@ -1,0 +1,23 @@
+spring:
+  # 服务名称
+  application:
+    name: workshop-system
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 'password'
+    url: jdbc:mysql://192.168.50.128:3306/system?characterEncoding=utf8&useUnicode=true&verifyServerCertificate=false&useSSL=false&requireSSL=false&serverTimezone=Asia/Shanghai
+    type: com.alibaba.druid.pool.DruidDataSource
+mqtt:
+  enable: true
+  host: tcp://211.103.33.70:2883
+
+  username: root
+  password: password
+  timeout: 10
+  keepAlive: 60
+  topic: CDZ/#
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+

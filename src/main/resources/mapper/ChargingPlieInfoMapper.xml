@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.chargingPileSystem.mapper.ChargingPlieInfoMapper">
+    <insert id="insertChargingPile">
+        insert into sys_charging_pile_info(charging_pile_id)
+        values(#{chargingPileId})
+    </insert>
+
+    <update id="updateStatus">
+        update sys_charging_pile_info set status = #{status} where id = #{id}
+    </update>
+    <update id="updateChargingPile">
+
+    </update>
+    <select id="queryChargingPileList" resultType="com.example.chargingPileSystem.domain.ChargingPlieInfo">
+        select * from sys_charging_pile_info
+    </select>
+    <select id="queryId" resultType="java.lang.String">
+        select id from sys_charging_pile_info where charging_pile_id = #{ChargingPileIId}
+    </select>
+</mapper>
