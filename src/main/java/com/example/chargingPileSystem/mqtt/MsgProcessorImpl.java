@@ -4,7 +4,6 @@ import com.example.chargingPileSystem.commen.PropertyIgnore;
 import com.example.chargingPileSystem.domain.ChargingPlieInfo;
 import com.example.chargingPileSystem.domain.ChargingPlieRecord;
 import com.example.chargingPileSystem.mapper.ChargingPlieInfoMapper;
-import javafx.fxml.Initializable;
 import lombok.Data;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -57,7 +56,7 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
         ChargingPlieInfo chargingPlieInfo = new ChargingPlieInfo();
         ChargingPlieRecord chargingPlieRecord = new ChargingPlieRecord();
 
-        String[] strings = new String[26];
+        String[] strings = new String[30];
         String[] split = message.replace("\r", "").split(("\n"));
         for (int i = 0; i < split.length; i++) {
             String name = split[i].substring(split[i].indexOf(":") + 1);
