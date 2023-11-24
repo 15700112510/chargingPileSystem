@@ -1,5 +1,6 @@
 package com.example.chargingPileSystem.mqtt;
 
+import com.example.chargingPileSystem.commen.CheckDataChanges;
 import com.example.chargingPileSystem.commen.PropertyIgnore;
 import com.example.chargingPileSystem.domain.ChargingPlieInfo;
 import com.example.chargingPileSystem.domain.ChargingPlieRecord;
@@ -57,7 +58,7 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
         ChargingPlieInfo chargingPlieInfo = new ChargingPlieInfo();
         ChargingPlieRecord chargingPlieRecord = new ChargingPlieRecord();
 
-        String[] strings = new String[26];
+        String[] strings = new String[30];
         String[] split = message.replace("\r", "").split(("\n"));
         for (int i = 0; i < split.length; i++) {
             String name = split[i].substring(split[i].indexOf(":") + 1);
@@ -108,6 +109,7 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
             int chargingForm = Integer.parseInt(chargingPileAction[0]);
             //0/1 (闭闸/合闸)
             int gateStatus = Integer.parseInt(chargingPileAction[1]);
+            String dateString = "20"+chargingPileAction[2]+"-"+ chargingPileAction[3] + "-"+chargingPileAction[4] + " "+secondsConversion(chargingPileAction[5]);
 
             int error = Integer.parseInt(strings[14]);
 
@@ -152,13 +154,13 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
             chargingPlieRecord.setChargingForm(chargingForm);
             chargingPlieRecord.setGateStatus(gateStatus);
             if (gateStatus == 0) {
-                chargingPlieRecord.setUpTime(this.getTimestamp(chargingPileAction[3]));
+                chargingPlieRecord.setUpTime(this.getTimestamp(dateString));
             } else if (gateStatus == 1) {
-                chargingPlieRecord.setDownTime(this.getTimestamp(chargingPileAction[3]));
+                chargingPlieRecord.setDownTime(this.getTimestamp(dateString));
             }
 
             //数据库更新chargingPlieInfo
-            if (contrastChargingPile(imei, chargingPlieInfo)) {
+            if (CheckDataChanges.contrastChargingPile(imei, chargingPlieInfo, this.lastChargingPlieInfo)) {
                 chargingPlieInfoMapper.updateChargingPile(chargingPlieInfo);
             }
 
@@ -175,7 +177,7 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
         // 初始化
         for (int i = 1; i <= chargingPlieInfoList.size(); i++) {
             aliveStatus.put(String.valueOf(i), new Object[]{System.currentTimeMillis(), "4"});
-            lastChargingPlieInfo.put(chargingPlieInfoList.get(i-1).getChargingPileId(), chargingPlieInfoList.get(i-1));
+            lastChargingPlieInfo.put(chargingPlieInfoList.get(i - 1).getChargingPileId(), chargingPlieInfoList.get(i - 1));
         }
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
             aliveStatus.forEach((id, obj) -> {
@@ -197,38 +199,21 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
         chargingPlieInfoMapper.updateStatus(Integer.parseInt(status), Integer.parseInt(id));
     }
 
-    public boolean contrastChargingPile(String imei, ChargingPlieInfo chargingPlieInfo) throws IllegalAccessException {
-        ChargingPlieInfo lastChargingPlieInfo = this.lastChargingPlieInfo.get(imei);
-        this.lastChargingPlieInfo.replace(imei, lastChargingPlieInfo);
-        return this.getObjectProperty(chargingPlieInfo, lastChargingPlieInfo);
-    }
-
-    public boolean getObjectProperty(Object obj, Object obj2) throws IllegalAccessException {
-        Class<?> clazz = obj.getClass();
-        Field[] fields = clazz.getDeclaredFields();
-        int count = 0;
-        for (Field field : fields) {
-            field.setAccessible(true);
-            if (field.get(obj).equals(field.get(obj2)) && !field.isAnnotationPresent(PropertyIgnore.class)) {
-                count++;
-                if (field.getType() == int.class) {
-                    field.set(obj, -1);
-                } else if (field.getType() == String.class ) {
-                    field.set(obj, "-1");
-                }
-            } else {
-                field.set(obj2, field.get(obj));
-            }
-        }
-        return count==fields.length;
-    }
+    //将“yyyy-mm-dd HH:mm:ss”字符串转化为Timestamp类型”
     public Timestamp getTimestamp(String dateString) throws ParseException {
-        //定义日期格式
-        String pattern = "yyyy-MM-dd HH:mm:ss";
-//创建SimpleDateFormat类对象
+        String pattern = "yyyy-M-d H:m:s";
         SimpleDateFormat sdf = new SimpleDateFormat(pattern);
-//将String类型转换为datetime类型
         Date dateTime = sdf.parse(dateString);
         return new Timestamp(dateTime.getTime());
+    }
+
+    //根据秒数算出时分秒
+    public String secondsConversion(String totalSeconds){
+        int seconds = Integer.parseInt(totalSeconds);
+        int minutes = seconds / 60;
+        int remainingSeconds = seconds % 60;
+        int hour = minutes / 60;
+        int remainingMinutes = minutes % 60;
+        return hour+ ":"+remainingMinutes + ":"+remainingSeconds;
     }
 }
