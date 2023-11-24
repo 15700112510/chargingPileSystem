@@ -13,17 +13,17 @@
     </update>
     <update id="updateChargingPile">
         update sys_charging_pile_info
-        set voltage= #{voltage},
-            current= #{current},
-            power= #{power},
-            accumulated_electric_energy= #{accumulatedElectricEnergy},
-            error= #{error},
-            appointment_time= #{appointmentTime},
-            equipment_temperature= #{equipmentTemperature},
-            status= #{status},
-            ble_name= #{bleName}
-        where charging_pile_id =
-              #{chargingPileId}
+        <trim prefix="set" suffixOverrides="," suffix="where charging_pile_id = #{chargingPileId}">
+            <if test="voltage!='-1'">voltage= #{voltage},</if>
+            <if test="current!='-1'">current= #{current},</if>
+            <if test="power!='-1'">power= #{power},</if>
+            <if test="accumulatedElectricEnergy!='-1'">accumulated_electric_energy=#{accumulatedElectricEnergy},</if>
+            <if test="error != -1">error= #{error},</if>
+            <if test="appointmentTime!='-1'">appointment_time= #{appointmentTime},</if>
+            <if test="equipmentTemperature != -1">equipment_temperature= #{equipmentTemperature},</if>
+            <if test="status != -1">status= #{status},</if>
+            <if test="!bleName.equals('-1')">ble_name= #{bleName},</if>
+        </trim>
     </update>
     <select id="queryChargingPileList" resultType="com.example.chargingPileSystem.domain.ChargingPlieInfo">
         select *
