@@ -19,5 +19,12 @@ mqtt:
   topic: CDZ/#
 
 mybatis:
+  # mapper.xml文件扫描路径
   mapper-locations: classpath:mapper/*.xml
+  configuration:
+    # 开启驼峰映射，使得数据库字段与实体类映射起来
+    map-underscore-to-camel-case: true
 
+logging:
+  level:
+    com.example.chargingPileSystem.mapper: info

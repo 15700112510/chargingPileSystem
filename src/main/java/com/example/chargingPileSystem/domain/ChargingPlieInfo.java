@@ -1,10 +1,12 @@
 package com.example.chargingPileSystem.domain;
 
+import com.example.chargingPileSystem.commen.PropertyIgnore;
 import lombok.Data;
 
 @Data
 public class ChargingPlieInfo  {
     private int id;
+    @PropertyIgnore
     private String chargingPileId;
     private String voltage;
     private String current;
