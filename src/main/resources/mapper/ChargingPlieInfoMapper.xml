@@ -32,6 +32,6 @@
     <select id="queryId" resultType="java.lang.String">
         select id
         from sys_charging_pile_info
-        where charging_pile_id = #{ChargingPileIId}
+        where charging_pile_id = #{ChargingPileId}
     </select>
 </mapper>
