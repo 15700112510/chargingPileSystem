@@ -146,7 +146,6 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
             chargingPileInfo.setBleName(bleName);
             chargingPileInfo.setEquipmentTemperature(equipmentTemperature);
             chargingPileInfo.setStatus(Integer.parseInt(status));
-            chargingPileInfo.setSta
 
             //赋值chargingPlieRecord
             chargingPileRecord.setChargingPileId(imei);

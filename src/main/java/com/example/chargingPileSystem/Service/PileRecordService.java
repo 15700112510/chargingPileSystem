@@ -5,4 +5,5 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 
 public interface PileRecordService {
     public R<?> openPile(String chargingPileId) throws MqttException;
+
 }
