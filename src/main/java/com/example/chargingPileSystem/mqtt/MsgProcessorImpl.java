@@ -140,6 +140,7 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
             chargingPileInfo.setVoltage(voltage);
             chargingPileInfo.setCurrent(current);
             chargingPileInfo.setPower(power);
+            chargingPileInfo.setStage(stage);
             chargingPileInfo.setAccumulatedElectricEnergy(accumulatedElectricEnergy);
             chargingPileInfo.setAppointmentTime(appointmentTime);
             chargingPileInfo.setBleName(bleName);
@@ -238,7 +239,7 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
             chargingPileRecordMapper.insertChargingPileRecord(chargingPileRecord);
         }
         if (gateStatus == 0) {
-            if (lastChargingPileRecord.getUpTime() != null || chargingPileRecord.getUpTime().equals(lastChargingPileRecord.getUpTime())) {
+            if (chargingPileRecord.getUpTime().equals(lastChargingPileRecord.getUpTime())) {
                 boolean result = CheckDataChanges.getObjectProperty(chargingPileRecord, lastChargingPileRecord);
                 if (result) {
                     System.out.println("进入result更新");
