@@ -145,6 +145,7 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
             chargingPileInfo.setBleName(bleName);
             chargingPileInfo.setEquipmentTemperature(equipmentTemperature);
             chargingPileInfo.setStatus(Integer.parseInt(status));
+            chargingPileInfo.setSta
 
             //赋值chargingPlieRecord
             chargingPileRecord.setChargingPileId(imei);
@@ -241,6 +242,7 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
                 boolean result = CheckDataChanges.getObjectProperty(chargingPileRecord, lastChargingPileRecord);
                 if (result) {
                     System.out.println("进入result更新");
+                    System.out.println(chargingPileRecord);
                     chargingPileRecordMapper.updateChargingPileRecord(chargingPileRecord);
                 }
             } else {
