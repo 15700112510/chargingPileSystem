@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.chargingPileSystem.mapper.ChargingPileRecordMapper">
+    <insert id="insertChargingPileRecord">
+        insert into sys_charging_pile_record(charging_pile_id, up_time, down_time, user_open_id, stage, charging_time,
+                                             charging_form, gate_status, single_energy)
+        values (#{chargingPileId}, #{upTime}, #{downTime}, #{userOpenId}, #{stage}, #{chargingTime}, #{chargingForm},
+                #{gateStatus}, #{singleEnergy})
+    </insert>
+    <update id="updateChargingPileRecord">
+        update sys_charging_pile_record
+        <trim prefix="set" suffixOverrides="," suffix="where charging_pile_id = #{chargingPileId}">
+            up_time= #{upTime},
+            down_time= #{downTime},
+            <if test="user_open_id!='-1'">user_open_id= #{userOpenId},</if>
+            <if test="stage!='-1'">stage=#{stage},</if>
+            <if test="charging_time != -1">charging_time= #{chargingTime},</if>
+            <if test="charging_form!= -1">charging_form= #{chargingForm},</if>
+            <if test="gate_status != -1">gate_status= #{gateStatus},</if>
+            <if test="single_energy != '-1'">single_energy= #{singleEnergy},</if>
+        </trim>
+    </update>
+    <select id="queryLastRecord" resultType="com.example.chargingPileSystem.domain.ChargingPileRecord">
+        select *
+        from sys_charging_pile_record
+        where charging_pile_id = #{chargingPileId}
+        ORDER BY id DESC LIMIT 1
+    </select>
+</mapper>

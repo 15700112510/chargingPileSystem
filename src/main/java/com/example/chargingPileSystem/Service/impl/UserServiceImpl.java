@@ -16,7 +16,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public R<?> login(String userOpenId) {
-        UserInfo userInfo = userMapper.queryUserOpenId(userOpenId);
+        UserInfo userInfo = userMapper.queryUser(userOpenId);
         if (userInfo != null) {
             if (userInfo.getChargingPileId() != null) {
                 return R.ok(userInfo.getChargingPileId());
@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public R<?> register(String userOpenId,String chargingPileId){
-        userMapper.insertChargingPlieId(userOpenId,chargingPileId);
+     //   userMapper.insertChargingPlieId(userOpenId,chargingPileId);
         return R.ok();
     }
 }

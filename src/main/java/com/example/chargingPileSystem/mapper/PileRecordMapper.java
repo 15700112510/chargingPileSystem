@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 
 @Mapper
-public interface PileRecordMapper {
+public interface  PileRecordMapper {
     //获取充电状态
     public StateForm queryChargingPileState(String chargingPileId);
 

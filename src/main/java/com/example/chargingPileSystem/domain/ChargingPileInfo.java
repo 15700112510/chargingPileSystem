@@ -4,7 +4,10 @@ import com.example.chargingPileSystem.commen.PropertyIgnore;
 import lombok.Data;
 
 @Data
-public class ChargingPlieInfo  {
+public class ChargingPileInfo {
+
+
+    @PropertyIgnore
     private int id;
     @PropertyIgnore
     private String chargingPileId;

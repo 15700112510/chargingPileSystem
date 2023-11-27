@@ -1,10 +1,12 @@
 package com.example.chargingPileSystem;
 
-import com.example.chargingPileSystem.domain.ChargingPlieInfo;
+import com.example.chargingPileSystem.domain.ChargingPileInfo;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.lang.reflect.Field;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @SpringBootTest
 class ChargingPileSystemApplicationTests {
@@ -20,7 +22,6 @@ class ChargingPileSystemApplicationTests {
 
     @Test
     void contextLoads() {
-        getObjectProperty(new ChargingPlieInfo());
     }
 
 }
