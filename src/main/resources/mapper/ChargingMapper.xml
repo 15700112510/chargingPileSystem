@@ -19,4 +19,10 @@
         where charging_pile_id = #{ChargingPileId}
     </select>
 
+    <select id="queryStage" resultType="java.lang.Integer">
+        select stage
+        from sys_charging_pile_record
+        where charging_pile_id = #{ChargingPileId}
+    </select>
+
 </mapper>

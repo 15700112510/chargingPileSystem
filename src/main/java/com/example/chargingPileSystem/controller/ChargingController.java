@@ -12,11 +12,11 @@ import javax.annotation.Resource;
 @RequestMapping("/api/charging")
 public class ChargingController {
     @Resource
-    private ChargingService stateService;
+    private ChargingService chargingService;
 
     @GetMapping(value = "/state")
     public R<?> state(@RequestParam String chargingPileId)  {
-        return stateService.state(chargingPileId);
+        return chargingService.state(chargingPileId);
     }
 
 

@@ -13,4 +13,7 @@ public interface ChargingMapper {
 
     //获取开始充电时间
     public String queryUpTime(String chargingPileInfo);
+
+    //获取充电CP信号
+    public int queryStage(String chargingPileInfo);
 }
