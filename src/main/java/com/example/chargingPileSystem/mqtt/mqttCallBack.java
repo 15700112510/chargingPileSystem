@@ -60,12 +60,6 @@ public class mqttCallBack implements MqttCallback {
 
     @Override
     public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-            if (iMqttDeliveryToken.isComplete()) {
-                try {
-                    log.debug("Message [{}] delivery completed", new String(iMqttDeliveryToken.getMessage().getPayload()));
-                } catch (MqttException e) {
 
-                }
-            }
     }
 }

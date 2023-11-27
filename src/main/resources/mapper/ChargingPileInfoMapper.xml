@@ -38,6 +38,6 @@
     <select id="queryStage" resultType="java.lang.String">
         select stage
         from sys_charging_pile_info
-        where ChargingPileId = #{ChargingPileId}
+        where charging_pile_id = #{ChargingPileId}
     </select>
 </mapper>

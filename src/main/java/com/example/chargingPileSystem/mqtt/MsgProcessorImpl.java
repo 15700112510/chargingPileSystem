@@ -241,7 +241,7 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
             if (chargingPileRecord.getUpTime().equals(lastChargingPileRecord.getUpTime())) {
                 boolean result = CheckDataChanges.getObjectProperty(chargingPileRecord, lastChargingPileRecord);
                 if (result) {
-                    System.out.println("进入result更新");
+                    System.out.println("进入result更新"+imei);
                     chargingPileRecordMapper.updateChargingPileRecord(chargingPileRecord);
                 }
             } else {
