@@ -13,12 +13,13 @@ public class CheckDataChanges {
         int count = 0;
         for (Field field : fields) {
             field.setAccessible(true);
-            if(field.get(obj) == null || field.get(obj) == ""){
-               if(field.get(obj2) == null || field.get(obj2) == ""){
-                   count++;
-               }
-               else
-                   field.set(obj2, field.get(obj));
+            if (field.isAnnotationPresent(PropertyIgnore.class)) {
+                count++;
+            } else if (field.get(obj) == null || field.get(obj) == "") {
+                if (field.get(obj2) == null || field.get(obj2) == "") {
+                    count++;
+                } else
+                    field.set(obj2, field.get(obj));
             } else if (field.get(obj).equals(field.get(obj2)) && !field.isAnnotationPresent(PropertyIgnore.class)) {
                 count++;
                 if (field.getType() == int.class) {
@@ -30,6 +31,6 @@ public class CheckDataChanges {
                 field.set(obj2, field.get(obj));
             }
         }
-        return count != fields.length-2;
+        return count != fields.length;
     }
 }
