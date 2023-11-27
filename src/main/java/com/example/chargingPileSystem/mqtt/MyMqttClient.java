@@ -4,7 +4,6 @@ import com.example.chargingPileSystem.commen.BeanFactoryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.*;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -31,7 +30,7 @@ public class MyMqttClient {
         // 连接服务器
         connect(mqttClient, mqttProperties);
         mqttClient.subscribe(mqttProperties.getTopic());
-        mqttClient.setCallback(new mqttCallBack(mqttProperties, mqttClient,beanFactoryWrapper));
+        mqttClient.setCallback(new ChargingPileMqttCallback(mqttProperties, mqttClient,beanFactoryWrapper));
     }
 
     /**

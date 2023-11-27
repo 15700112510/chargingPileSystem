@@ -2,7 +2,6 @@ package com.example.chargingPileSystem.mqtt;
 import com.example.chargingPileSystem.commen.BeanFactoryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.*;
-import org.omg.CORBA.SystemException;
 
 import java.util.Arrays;
 
