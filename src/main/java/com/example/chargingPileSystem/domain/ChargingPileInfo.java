@@ -5,8 +5,6 @@ import lombok.Data;
 
 @Data
 public class ChargingPileInfo {
-
-
     @PropertyIgnore
     private int id;
     @PropertyIgnore
