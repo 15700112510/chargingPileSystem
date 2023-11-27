@@ -21,23 +21,22 @@ public class PileRecordServiceImpl implements PileRecordService {
     public R<?> state(String chargingPileId){
 
         StateForm stateForm = pileRecordMapper.queryChargingPileState(chargingPileId);
-        System.out.println(stateForm.getUpTime());
+        return R.ok(stateForm);
+//        System.out.println(stateForm.getChargingTime());
 
-        Timestamp uptime = stateForm.getUpTime();
-        long uptimeTime = uptime.getTime();
-        long currentTimeMillis = System.currentTimeMillis();
-        long temp = currentTimeMillis - uptimeTime;
-
-        long hours = TimeUnit.MILLISECONDS.toHours(temp);
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(temp) % 60;
-        long seconds = TimeUnit.MILLISECONDS.toSeconds(temp) % 60;
-        String time = hours + "小时" + minutes + "分" + seconds + "秒";
+//        Timestamp uptime = stateForm.getChargingTime();
+//        long uptimeTime = uptime.getTime();
+//        long currentTimeMillis = System.currentTimeMillis();
+//        long temp = currentTimeMillis - uptimeTime;
+//
+//        long hours = TimeUnit.MILLISECONDS.toHours(temp);
+//        long minutes = TimeUnit.MILLISECONDS.toMinutes(temp) % 60;
+//        long seconds = TimeUnit.MILLISECONDS.toSeconds(temp) % 60;
+//        String time = hours + "小时" + minutes + "分" + seconds + "秒";
 //        System.out.println(time);
 //        return R.ok(temp);
 //        System.out.println(currentTimeMillis);
 //        stateForm.setUpTime();
-
-        return R.ok();
 
     }
 }

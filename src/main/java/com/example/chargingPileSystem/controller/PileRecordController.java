@@ -12,8 +12,6 @@ import javax.annotation.Resource;
 public class PileRecordController {
     @Resource
     private PileRecordService pileRecordService;
-    @Resource
-    private MqttClient mqttClient;
 
     @GetMapping(value = "/state")
     public R<?> state(@RequestParam String chargingPileId) {

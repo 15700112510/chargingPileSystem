@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 public class StateForm {
 
     //充电开始时间
-    private Timestamp upTime;
+    private String chargingTime;
 
     //充电电压；
     private String voltage;
@@ -19,7 +19,7 @@ public class StateForm {
     //充电功率；
     private String power;
 
-    
+
 
 
 }
