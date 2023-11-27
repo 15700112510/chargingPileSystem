@@ -1,11 +1,14 @@
 package com.example.chargingPileSystem.domain;
 
+import com.example.chargingPileSystem.commen.PropertyIgnore;
 import lombok.Data;
 
 import java.sql.Timestamp;
 @Data
-public class ChargingPlieRecord {
+public class ChargingPileRecord {
+    @PropertyIgnore
     private int id;
+    @PropertyIgnore
     private String chargingPileId;
     private Timestamp upTime;
     private Timestamp downTime;
@@ -15,5 +18,4 @@ public class ChargingPlieRecord {
     private String singleEnergy;
     private int chargingForm;
     private int gateStatus;
-    private String CP;
 }

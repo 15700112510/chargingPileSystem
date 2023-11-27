@@ -1,22 +1,18 @@
 package com.example.chargingPileSystem.mqtt;
 
-import com.example.chargingPileSystem.commen.CheckDataChanges;
-import com.example.chargingPileSystem.commen.PropertyIgnore;
-import com.example.chargingPileSystem.domain.ChargingPlieInfo;
-import com.example.chargingPileSystem.domain.ChargingPlieRecord;
-import com.example.chargingPileSystem.mapper.ChargingPlieInfoMapper;
-import javafx.fxml.Initializable;
+import com.example.chargingPileSystem.mapper.ChargingPileRecordMapper;
+import com.example.chargingPileSystem.mapper.UserMapper;
+import com.example.chargingPileSystem.util.CheckDataChanges;
+import com.example.chargingPileSystem.domain.ChargingPileInfo;
+import com.example.chargingPileSystem.domain.ChargingPileRecord;
+import com.example.chargingPileSystem.mapper.ChargingPileInfoMapper;
 import lombok.Data;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEventPublisher;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.lang.reflect.Field;
-import java.net.URL;
-import java.rmi.MarshalledObject;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,11 +28,15 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
     @Resource
     private MqttClient mqttClient;
     @Resource
-    private ChargingPlieInfoMapper chargingPlieInfoMapper;
+    private ChargingPileInfoMapper chargingPileInfoMapper;
+    @Resource
+    private ChargingPileRecordMapper chargingPileRecordMapper;
+    @Resource
+    private UserMapper userMapper;
 
     // 机器号/最近活跃时间毫秒数
     public static Map<String, Object[]> aliveStatus;
-    public static Map<String, ChargingPlieInfo> lastChargingPlieInfo;
+    public static Map<String, ChargingPileInfo> lastChargingPlieInfo;
 
     @Override
     public void process() {
@@ -55,8 +55,8 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
     }
 
     public void persistence(String message) throws IllegalAccessException, ParseException {
-        ChargingPlieInfo chargingPlieInfo = new ChargingPlieInfo();
-        ChargingPlieRecord chargingPlieRecord = new ChargingPlieRecord();
+        ChargingPileInfo chargingPileInfo = new ChargingPileInfo();
+        ChargingPileRecord chargingPileRecord = new ChargingPileRecord();
 
         String[] strings = new String[30];
         String[] split = message.replace("\r", "").split(("\n"));
@@ -65,9 +65,9 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
             strings[i] = name.replace("\"", "");
         }
         String imei = strings[0];
-        if (chargingPlieInfoMapper.queryId(imei) == null) {
-            lastChargingPlieInfo.put(imei, new ChargingPlieInfo());
-            chargingPlieInfoMapper.insertChargingPile(imei);
+        if (chargingPileInfoMapper.queryId(imei) == null) {
+            lastChargingPlieInfo.put(imei, new ChargingPileInfo());
+            chargingPileInfoMapper.insertChargingPile(imei);
         }
         if (split.length == 2) {
             setStatus(imei, "0");
@@ -109,7 +109,7 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
             int chargingForm = Integer.parseInt(chargingPileAction[0]);
             //0/1 (闭闸/合闸)
             int gateStatus = Integer.parseInt(chargingPileAction[1]);
-            String dateString = "20"+chargingPileAction[2]+"-"+ chargingPileAction[3] + "-"+chargingPileAction[4] + " "+secondsConversion(chargingPileAction[5]);
+            String dateString = "20" + chargingPileAction[2] + "-" + chargingPileAction[3] + "-" + chargingPileAction[4] + " " + secondsConversion(chargingPileAction[5]);
 
             int error = Integer.parseInt(strings[14]);
 
@@ -135,34 +135,38 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
             String status = strings[24];
 
             //赋值chargingPlieInfo
-            chargingPlieInfo.setChargingPileId(imei);
-            chargingPlieInfo.setId(Integer.parseInt(chargingPlieInfoMapper.queryId(imei)));
-            chargingPlieInfo.setVoltage(voltage);
-            chargingPlieInfo.setCurrent(current);
-            chargingPlieInfo.setPower(power);
-            chargingPlieInfo.setAccumulatedElectricEnergy(accumulatedElectricEnergy);
-            chargingPlieInfo.setAppointmentTime(appointmentTime);
-            chargingPlieInfo.setBleName(bleName);
-            chargingPlieInfo.setEquipmentTemperature(equipmentTemperature);
-            chargingPlieInfo.setStatus(Integer.parseInt(status));
+            chargingPileInfo.setChargingPileId(imei);
+            chargingPileInfo.setId(Integer.parseInt(chargingPileInfoMapper.queryId(imei)));
+            chargingPileInfo.setVoltage(voltage);
+            chargingPileInfo.setCurrent(current);
+            chargingPileInfo.setPower(power);
+            chargingPileInfo.setAccumulatedElectricEnergy(accumulatedElectricEnergy);
+            chargingPileInfo.setAppointmentTime(appointmentTime);
+            chargingPileInfo.setBleName(bleName);
+            chargingPileInfo.setEquipmentTemperature(equipmentTemperature);
+            chargingPileInfo.setStatus(Integer.parseInt(status));
 
             //赋值chargingPlieRecord
-            chargingPlieRecord.setChargingPileId(imei);
-            chargingPlieRecord.setChargingTime(chargingTime);
-            chargingPlieRecord.setSingleEnergy(singleEnergy);
-            chargingPlieRecord.setStage(stage);
-            chargingPlieRecord.setChargingForm(chargingForm);
-            chargingPlieRecord.setGateStatus(gateStatus);
+            chargingPileRecord.setChargingPileId(imei);
+            chargingPileRecord.setUserOpenId(userMapper.queryUserOpenId(imei));
+            chargingPileRecord.setChargingTime(chargingTime);
+            chargingPileRecord.setSingleEnergy(singleEnergy);
+            chargingPileRecord.setStage(stage);
+            chargingPileRecord.setChargingForm(chargingForm);
+            chargingPileRecord.setGateStatus(gateStatus);
             if (gateStatus == 0) {
-                chargingPlieRecord.setUpTime(this.getTimestamp(dateString));
+                chargingPileRecord.setUpTime(this.getTimestamp(dateString));
             } else if (gateStatus == 1) {
-                chargingPlieRecord.setDownTime(this.getTimestamp(dateString));
+                chargingPileRecord.setDownTime(this.getTimestamp(dateString));
             }
 
             //数据库更新chargingPlieInfo
-            if (CheckDataChanges.contrastChargingPile(imei, chargingPlieInfo, this.lastChargingPlieInfo)) {
-                chargingPlieInfoMapper.updateChargingPile(chargingPlieInfo);
+            if (contrastChargingPile(imei, chargingPileInfo)) {
+                chargingPileInfoMapper.updateChargingPile(chargingPileInfo);
             }
+
+            //  数据库更新chargingPlieRecord
+            contrastChargingPileRecord(imei, chargingPileRecord, gateStatus);
 
         }
 
@@ -170,21 +174,21 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        List<ChargingPlieInfo> chargingPlieInfoList = chargingPlieInfoMapper.queryChargingPileList();
+        List<ChargingPileInfo> chargingPileInfoList = chargingPileInfoMapper.queryChargingPileList();
         aliveStatus = new HashMap<>(128);
         lastChargingPlieInfo = new HashMap<>(128);
 
         // 初始化
-        for (int i = 1; i <= chargingPlieInfoList.size(); i++) {
+        for (int i = 1; i <= chargingPileInfoList.size(); i++) {
             aliveStatus.put(String.valueOf(i), new Object[]{System.currentTimeMillis(), "4"});
-            lastChargingPlieInfo.put(chargingPlieInfoList.get(i - 1).getChargingPileId(), chargingPlieInfoList.get(i - 1));
+            lastChargingPlieInfo.put(chargingPileInfoList.get(i - 1).getChargingPileId(), chargingPileInfoList.get(i - 1));
         }
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
             aliveStatus.forEach((id, obj) -> {
                 if (System.currentTimeMillis() - (long) obj[0] > 60000) {
                     if (aliveStatus.get(id)[1] != "4") {
                         // 若60s内还不在线，则标记为离线状态
-                        chargingPlieInfoMapper.updateStatus(4, Integer.parseInt(id));
+                        chargingPileInfoMapper.updateStatus(4, Integer.parseInt(id));
                         aliveStatus.replace(id, new Object[]{obj[0], "4"});
                     }
                 }
@@ -194,9 +198,9 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
 
     //设置aliveStatus和更新数据库状态
     public void setStatus(String imei, String status) {
-        String id = chargingPlieInfoMapper.queryId(imei);
+        String id = chargingPileInfoMapper.queryId(imei);
         aliveStatus.replace(id, new Object[]{System.currentTimeMillis(), status});
-        chargingPlieInfoMapper.updateStatus(Integer.parseInt(status), Integer.parseInt(id));
+        chargingPileInfoMapper.updateStatus(Integer.parseInt(status), Integer.parseInt(id));
     }
 
     //将“yyyy-mm-dd HH:mm:ss”字符串转化为Timestamp类型”
@@ -208,12 +212,41 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
     }
 
     //根据秒数算出时分秒
-    public String secondsConversion(String totalSeconds){
+    public String secondsConversion(String totalSeconds) {
         int seconds = Integer.parseInt(totalSeconds);
         int minutes = seconds / 60;
         int remainingSeconds = seconds % 60;
         int hour = minutes / 60;
         int remainingMinutes = minutes % 60;
-        return hour+ ":"+remainingMinutes + ":"+remainingSeconds;
+        return hour + ":" + remainingMinutes + ":" + remainingSeconds;
+    }
+
+    //判断从取出对象中的属性与本地没有的对象是否相同
+    public boolean contrastChargingPile(String imei, ChargingPileInfo chargingPileInfo) throws IllegalAccessException {
+        ChargingPileInfo lastChargingPileInfo = this.lastChargingPlieInfo.get(imei);
+        boolean result = CheckDataChanges.getObjectProperty(chargingPileInfo, lastChargingPileInfo);
+        this.lastChargingPlieInfo.replace(imei, lastChargingPileInfo);
+        return result;
+    }
+
+    //判断是否需要插入新的充电记录
+    public void contrastChargingPileRecord(String imei, ChargingPileRecord chargingPileRecord, int gateStatus) throws IllegalAccessException {
+        ChargingPileRecord lastChargingPileRecord = chargingPileRecordMapper.queryLastRecord(imei);
+        if (lastChargingPileRecord == null) {
+            System.out.println("无记录插入");
+            chargingPileRecordMapper.insertChargingPileRecord(chargingPileRecord);
+        }
+        if (gateStatus == 0) {
+            if (lastChargingPileRecord.getUpTime() != null || chargingPileRecord.getUpTime().equals(lastChargingPileRecord.getUpTime())) {
+                boolean result = CheckDataChanges.getObjectProperty(chargingPileRecord, lastChargingPileRecord);
+                if (result) {
+                    System.out.println("进入result更新");
+                    chargingPileRecordMapper.updateChargingPileRecord(chargingPileRecord);
+                }
+            } else {
+                System.out.println("无相同开机时间插入");
+                chargingPileRecordMapper.insertChargingPileRecord(chargingPileRecord);
+            }
+        }
     }
 }
