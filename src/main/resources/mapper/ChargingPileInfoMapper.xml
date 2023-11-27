@@ -22,6 +22,7 @@
             <if test="appointmentTime!='-1'">appointment_time= #{appointmentTime},</if>
             <if test="equipmentTemperature != -1">equipment_temperature= #{equipmentTemperature},</if>
             <if test="status != -1">status= #{status},</if>
+            <if test="stage != '-1'">stage= #{stage},</if>
             <if test="!bleName.equals('-1')">ble_name= #{bleName},</if>
         </trim>
     </update>
@@ -33,5 +34,10 @@
         select id
         from sys_charging_pile_info
         where charging_pile_id = #{ChargingPileId}
+    </select>
+    <select id="queryStage" resultType="java.lang.String">
+        select stage
+        from sys_charging_pile_info
+        where ChargingPileId = #{ChargingPileId}
     </select>
 </mapper>

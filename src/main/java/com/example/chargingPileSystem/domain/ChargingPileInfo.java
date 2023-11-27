@@ -15,6 +15,7 @@ public class ChargingPileInfo {
     private String current;
     private String power;
     private String accumulatedElectricEnergy;
+    private String stage;
     private int error;
     private String appointmentTime;
     private int equipmentTemperature;
