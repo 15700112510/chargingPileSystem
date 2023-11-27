@@ -30,7 +30,7 @@ public class MyMqttClient {
         // 连接服务器
         connect(mqttClient, mqttProperties);
         mqttClient.subscribe(mqttProperties.getTopic());
-        mqttClient.setCallback(new ChargingPileMqttCallback(mqttProperties, mqttClient,beanFactoryWrapper));
+        mqttClient.setCallback(new mqttCallBack(mqttProperties, mqttClient,beanFactoryWrapper));
     }
 
     /**

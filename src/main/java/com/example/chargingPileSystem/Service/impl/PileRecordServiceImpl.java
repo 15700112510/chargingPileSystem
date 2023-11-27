@@ -35,7 +35,7 @@ public class PileRecordServiceImpl implements PileRecordService {
 //        System.out.println(time);
 //        return R.ok(temp);
 //        System.out.println(currentTimeMillis);
-        stateForm.setUpTime();
+//        stateForm.setUpTime();
 
         return R.ok();
 
