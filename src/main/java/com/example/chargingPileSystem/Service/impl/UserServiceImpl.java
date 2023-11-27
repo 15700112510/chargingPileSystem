@@ -6,7 +6,6 @@ import com.example.chargingPileSystem.domain.UserInfo;
 import com.example.chargingPileSystem.enums.ErrorEnum;
 import com.example.chargingPileSystem.mapper.UserMapper;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
 
 @Service("userService")
@@ -27,9 +26,10 @@ public class UserServiceImpl implements UserService {
             return R.fail(ErrorEnum.USERNAME_NO_EXIST_ERROR, "用户不存在");
         }
     }
+
     @Override
-    public R<?> register(String userOpenId,String chargingPileId){
-     //   userMapper.insertChargingPlieId(userOpenId,chargingPileId);
+    public R<?> register(String userName,String chargingPileId){
+        userMapper.register(userName,chargingPileId);
         return R.ok();
     }
 }

@@ -4,5 +4,5 @@ import com.example.chargingPileSystem.commen.R;
 
 public interface UserService {
     public R<?> login(String userOpenId);
-    public R<?> register(String userOpenId,String chargingPileId);
+    public R<?> register(String userName,String chargingPileId);
 }

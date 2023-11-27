@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface UserMapper {
     public UserInfo queryUser(String UserOpenId);
-    public int insertChargingPileId(String UserOpenId,String chargingPlieId);
+
+    public int register(String userName,String chargingPlieId);
+
     public String queryUserOpenId(String chargingPileId);
 }

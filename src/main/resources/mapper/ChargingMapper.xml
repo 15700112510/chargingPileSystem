@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.example.chargingPileSystem.mapper.PileRecordMapper">
+<mapper namespace="com.example.chargingPileSystem.mapper.ChargingMapper">
 
     <select id="queryChargingPileState" resultType="com.example.chargingPileSystem.form.StateForm">
         select sys_charging_pile_record.charging_time,
@@ -15,6 +15,12 @@
 
     <select id="queryUpTime" resultType="java.lang.String">
         select up_time
+        from sys_charging_pile_record
+        where charging_pile_id = #{ChargingPileId}
+    </select>
+
+    <select id="queryStage" resultType="java.lang.Integer">
+        select stage
         from sys_charging_pile_record
         where charging_pile_id = #{ChargingPileId}
     </select>
