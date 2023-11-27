@@ -10,7 +10,9 @@ public class ChargingPileRecord {
     private int id;
     @PropertyIgnore
     private String chargingPileId;
+    @PropertyIgnore
     private Timestamp upTime;
+    @PropertyIgnore
     private Timestamp downTime;
     private String userOpenId;
     private String stage;

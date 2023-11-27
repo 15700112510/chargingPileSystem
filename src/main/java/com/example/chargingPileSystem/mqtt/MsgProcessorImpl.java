@@ -104,6 +104,7 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
 
             //最近一次主闸动作指令来源:1,1,23,7,4,61879//2//说明：刷卡，合闸，23年，7月，4号，61879秒
             String odr = strings[13];
+
             String[] chargingPileAction = odr.split(",");
             //1/2/3/4/5 (刷卡/4G/预约/BLE/ERROR)
             int chargingForm = Integer.parseInt(chargingPileAction[0]);
@@ -142,6 +143,7 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
             chargingPileInfo.setPower(power);
             chargingPileInfo.setStage(stage);
             chargingPileInfo.setAccumulatedElectricEnergy(accumulatedElectricEnergy);
+            chargingPileInfo.setError(error);
             chargingPileInfo.setAppointmentTime(appointmentTime);
             chargingPileInfo.setBleName(bleName);
             chargingPileInfo.setEquipmentTemperature(equipmentTemperature);
@@ -155,19 +157,24 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
             chargingPileRecord.setStage(stage);
             chargingPileRecord.setChargingForm(chargingForm);
             chargingPileRecord.setGateStatus(gateStatus);
-            if (gateStatus == 0) {
+
+            if (gateStatus == 1) {
                 chargingPileRecord.setUpTime(this.getTimestamp(dateString));
-            } else if (gateStatus == 1) {
+            } else if (gateStatus == 0 && chargingUpTime != dateString) {
+                chargingPileRecord.setUpTime(this.getTimestamp(chargingUpTime));
                 chargingPileRecord.setDownTime(this.getTimestamp(dateString));
             }
 
-            //数据库更新chargingPlieInfo
-            if (contrastChargingPile(imei, chargingPileInfo)) {
-                chargingPileInfoMapper.updateChargingPile(chargingPileInfo);
+
+            if (!odr.equals("0,0,23,1,1,0")  ||  !chargingUpTime.equals("0-0-0 0:0:0")) {
+                //数据库更新chargingPlieInfo
+                if (contrastChargingPile(imei, chargingPileInfo)) {
+                    chargingPileInfoMapper.updateChargingPile(chargingPileInfo);
+                }
+                //  数据库更新chargingPlieRecord
+                contrastChargingPileRecord(imei, chargingPileRecord, gateStatus, chargingUpTime);
             }
 
-            //  数据库更新chargingPlieRecord
-            contrastChargingPileRecord(imei, chargingPileRecord, gateStatus);
 
         }
 
@@ -231,24 +238,20 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
     }
 
     //判断是否需要插入新的充电记录
-    public void contrastChargingPileRecord(String imei, ChargingPileRecord chargingPileRecord, int gateStatus) throws IllegalAccessException {
+    public void contrastChargingPileRecord(String imei, ChargingPileRecord chargingPileRecord, int gateStatus, String chargingUpTime) throws IllegalAccessException {
         ChargingPileRecord lastChargingPileRecord = chargingPileRecordMapper.queryLastRecord(imei);
         if (lastChargingPileRecord == null) {
             System.out.println("无记录插入");
             chargingPileRecordMapper.insertChargingPileRecord(chargingPileRecord);
-        }
-        if (gateStatus == 0) {
-            if (chargingPileRecord.getUpTime().equals(lastChargingPileRecord.getUpTime())) {
-                boolean result = CheckDataChanges.getObjectProperty(chargingPileRecord, lastChargingPileRecord);
-                if (result) {
-                    System.out.println("进入result更新");
-                    System.out.println(chargingPileRecord);
-                    chargingPileRecordMapper.updateChargingPileRecord(chargingPileRecord);
-                }
-            } else {
-                System.out.println("无相同开机时间插入");
-                chargingPileRecordMapper.insertChargingPileRecord(chargingPileRecord);
+        } else if (chargingPileRecord.getUpTime().equals(lastChargingPileRecord.getUpTime())) {
+            boolean result = CheckDataChanges.getObjectProperty(chargingPileRecord, lastChargingPileRecord);
+            if (result) {
+                System.out.println("进入result更新" + imei);
+                chargingPileRecordMapper.updateChargingPileRecord(chargingPileRecord);
             }
+        } else {
+            System.out.println("无相同开机时间插入");
+            chargingPileRecordMapper.insertChargingPileRecord(chargingPileRecord);
         }
     }
 }

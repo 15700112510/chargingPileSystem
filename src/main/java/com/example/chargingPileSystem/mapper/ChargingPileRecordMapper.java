@@ -5,7 +5,10 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface ChargingPileRecordMapper {
+    //获取最近一条充电记录
     public ChargingPileRecord queryLastRecord(String chargingPileId);
+    //更新充电记录
     public int updateChargingPileRecord(ChargingPileRecord chargingPileRecord);
+    //插入充电记录
     public int insertChargingPileRecord(ChargingPileRecord chargingPileRecord);
 }

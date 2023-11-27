@@ -15,6 +15,7 @@ public interface ChargingPileInfoMapper {
     public String queryId(String ChargingPileId);
     //加入新充电桩
     public int insertChargingPile(String chargingPileInfo);
+    //更新充电桩信息
     public int updateChargingPile(ChargingPileInfo chargingPileInfo);
     //获取CP信号
     public String queryStage(String id);
