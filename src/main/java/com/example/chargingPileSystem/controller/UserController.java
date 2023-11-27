@@ -18,6 +18,7 @@ public class UserController {
     private UserService userService;
     @Resource
     private MqttClient mqttClient;
+
     @RequestMapping("/login")
     public R<?> login(@RequestParam String userOpenId) {
         return userService.login(userOpenId);

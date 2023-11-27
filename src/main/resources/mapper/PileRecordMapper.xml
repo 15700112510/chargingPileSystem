@@ -6,12 +6,11 @@
         select sys_charging_pile_record.up_time,
                sys_charging_pile_info.voltage,
                sys_charging_pile_info.current,
-               sys_charging_pile_info.power,
-               sys_charging_pile_record.stage
-        from sys_charging_pile_info
-            inner join sys_charging_pile_record
-                on sys_charging_pile_info.charging_pile_id = sys_charging_pile_record.charging_pile_id
-        where sys_charging_pile_record.charging_pile_id = #{ChargingPileId}
+               sys_charging_pile_info.power
+               from sys_charging_pile_info
+                   inner join sys_charging_pile_record
+                       on sys_charging_pile_info.charging_pile_id = sys_charging_pile_record.charging_pile_id
+               where sys_charging_pile_record.charging_pile_id = #{ChargingPileId}
     </select>
 
     <select id="queryUpTime" resultType="java.lang.String">
@@ -19,4 +18,5 @@
         from sys_charging_pile_record
         where charging_pile_id = #{ChargingPileId}
     </select>
+
 </mapper>
