@@ -6,7 +6,6 @@ import com.example.chargingPileSystem.enums.ErrorEnum;
 import com.example.chargingPileSystem.form.StateForm;
 import com.example.chargingPileSystem.mapper.ChargingPileInfoMapper;
 import com.example.chargingPileSystem.mapper.ChargingPileRecordMapper;
-import com.example.chargingPileSystem.mapper.PileRecordMapper;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
