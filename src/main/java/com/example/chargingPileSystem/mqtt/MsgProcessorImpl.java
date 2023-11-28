@@ -239,13 +239,13 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
         if (lastChargingPileRecord == null) {
             System.out.println("无记录插入"+ imei);
             chargingPileRecordMapper.insertChargingPileRecord(chargingPileRecord);
-        } else if (chargingPileRecord.getUpTime().equals(lastChargingPileRecord.getUpTime())) {
+        } else if (chargingPileRecord.getUpTime().equals(lastChargingPileRecord.getUpTime()) && lastChargingPileRecord.getDownTime() == null) {
             boolean result = CheckDataChanges.getObjectProperty(chargingPileRecord, lastChargingPileRecord);
             if (result) {
                 System.out.println("进入result更新" + imei);
                 chargingPileRecordMapper.updateChargingPileRecord(chargingPileRecord);
             }
-        } else {
+        } else if(!chargingPileRecord.getUpTime().equals(lastChargingPileRecord.getUpTime())){
             System.out.println("无相同开机时间插入"+ imei);
             chargingPileRecordMapper.insertChargingPileRecord(chargingPileRecord);
         }
