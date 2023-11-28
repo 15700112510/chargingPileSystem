@@ -166,7 +166,7 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
             }
 
 
-            if (!odr.equals("0,0,23,1,1,0")  ||  !chargingUpTime.equals("0-0-0 0:0:0")) {
+            if (!odr.equals("0,0,23,1,1,0")  &&  !chargingUpTime.equals("0-0-0 0:0:0")) {
                 //数据库更新chargingPlieInfo
                 if (contrastChargingPile(imei, chargingPileInfo)) {
                     chargingPileInfoMapper.updateChargingPile(chargingPileInfo);
@@ -241,7 +241,7 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
     public void contrastChargingPileRecord(String imei, ChargingPileRecord chargingPileRecord, int gateStatus, String chargingUpTime) throws IllegalAccessException {
         ChargingPileRecord lastChargingPileRecord = chargingPileRecordMapper.queryLastRecord(imei);
         if (lastChargingPileRecord == null) {
-            System.out.println("无记录插入");
+            System.out.println("无记录插入"+ imei);
             chargingPileRecordMapper.insertChargingPileRecord(chargingPileRecord);
         } else if (chargingPileRecord.getUpTime().equals(lastChargingPileRecord.getUpTime())) {
             boolean result = CheckDataChanges.getObjectProperty(chargingPileRecord, lastChargingPileRecord);
@@ -250,7 +250,7 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
                 chargingPileRecordMapper.updateChargingPileRecord(chargingPileRecord);
             }
         } else {
-            System.out.println("无相同开机时间插入");
+            System.out.println("无相同开机时间插入"+ imei);
             chargingPileRecordMapper.insertChargingPileRecord(chargingPileRecord);
         }
     }
