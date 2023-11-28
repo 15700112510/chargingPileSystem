@@ -12,12 +12,12 @@
         <trim prefix="set" suffixOverrides="," suffix="where charging_pile_id = #{chargingPileId}">
             up_time= #{upTime},
             down_time= #{downTime},
-            <if test="user_open_id!='-1'">user_open_id= #{userOpenId},</if>
             <if test="stage!='-1'">stage=#{stage},</if>
-            <if test="charging_time != -1">charging_time= #{chargingTime},</if>
-            <if test="charging_form!= -1">charging_form= #{chargingForm},</if>
-            <if test="gate_status != -1">gate_status= #{gateStatus},</if>
-            <if test="single_energy != '-1'">single_energy= #{singleEnergy},</if>
+            <if test="userOpenId!='-1'">user_open_id= #{userOpenId},</if>
+            <if test="chargingTime != -1">charging_time= #{chargingTime},</if>
+            <if test="chargingForm!= -1">charging_form= #{chargingForm},</if>
+            <if test="gateStatus != -1">gate_status= #{gateStatus},</if>
+            <if test="singleEnergy != '-1'">single_energy= #{singleEnergy},</if>
         </trim>
     </update>
     <select id="queryLastRecord" resultType="com.example.chargingPileSystem.domain.ChargingPileRecord">
