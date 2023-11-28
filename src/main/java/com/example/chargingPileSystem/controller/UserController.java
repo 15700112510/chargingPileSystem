@@ -12,13 +12,13 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    @RequestMapping("/login")
-    public R<?> login(@RequestParam String userOpenId) {
-        return userService.login(userOpenId);
+    @PostMapping("/login")
+    public R<?> login(@RequestParam String userName) {
+        return userService.login(userName);
     }
 
     @PostMapping("/register")
-    public R<?> register(@RequestParam String userName,@RequestParam String chargingPileId) {
+    public R<?> register(@RequestParam String userName, @RequestParam String chargingPileId) {
         return userService.register(userName, chargingPileId);
     }
 }
