@@ -12,8 +12,8 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    @PostMapping("/login")
-    public R<?> login(@RequestParam String userName) {
+    @GetMapping("/login")
+    public R<?> login(@RequestBody String userName) {
         return userService.login(userName);
     }
 
