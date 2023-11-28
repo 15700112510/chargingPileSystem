@@ -158,15 +158,11 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
             chargingPileRecord.setChargingForm(chargingForm);
             chargingPileRecord.setGateStatus(gateStatus);
 
-            if (gateStatus == 1) {
-                chargingPileRecord.setUpTime(this.getTimestamp(dateString));
-            } else if (gateStatus == 0 && chargingUpTime != dateString) {
-                chargingPileRecord.setUpTime(this.getTimestamp(chargingUpTime));
-                chargingPileRecord.setDownTime(this.getTimestamp(dateString));
-            }
-
-
             if (!odr.equals("0,0,23,1,1,0")  &&  !chargingUpTime.equals("0-0-0 0:0:0")) {
+                chargingPileRecord.setUpTime(this.getTimestamp(chargingUpTime));
+                if (gateStatus == 0 && !this.getTimestamp(chargingUpTime).equals(this.getTimestamp(dateString))){
+                    chargingPileRecord.setDownTime(this.getTimestamp(dateString));
+                }
                 //数据库更新chargingPlieInfo
                 if (contrastChargingPile(imei, chargingPileInfo)) {
                     chargingPileInfoMapper.updateChargingPile(chargingPileInfo);
