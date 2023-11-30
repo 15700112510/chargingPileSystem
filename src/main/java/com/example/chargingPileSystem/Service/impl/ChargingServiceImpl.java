@@ -18,7 +18,7 @@ public class ChargingServiceImpl implements ChargingService {
     public R<?> state(String chargingPileId) {
         int Stage = chargingMapper.queryStage(chargingPileId);
         if (!(Stage == 12)){
-            return R.fail(ErrorEnum.CHARGING_PLIE_ID_NO_EXIST_ERROR,"充电桩不存在！");
+            return R.fail(ErrorEnum.CHARGING_PLIE_ID_NO_CONNECT_ERROR,"充电桩未连接");
         }
         StateForm stateForm = chargingMapper.queryChargingPileState(chargingPileId);
         return R.ok(stateForm);

@@ -2,6 +2,8 @@ package com.example.chargingPileSystem.controller;
 
 import com.example.chargingPileSystem.Service.UserService;
 import com.example.chargingPileSystem.commen.R;
+import com.example.chargingPileSystem.domain.UserInfo;
+import com.example.chargingPileSystem.form.LoginForm;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -12,13 +14,13 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    @RequestMapping("/login")
-    public R<?> login(@RequestParam String userOpenId) {
-        return userService.login(userOpenId);
+    @PostMapping("/login")
+    public R<?> login(@RequestBody LoginForm loginForm){
+        return userService.login(loginForm.getUserName());
     }
 
     @PostMapping("/register")
-    public R<?> register(@RequestParam String userName,@RequestParam String chargingPileId) {
-        return userService.register(userName, chargingPileId);
+    public R<?> register(@RequestBody UserInfo user) {
+        return userService.register(user.getUserName(), user.getChargingPileId());
     }
 }

@@ -13,14 +13,16 @@ public class UserServiceImpl implements UserService {
     @Resource
     private UserMapper userMapper;
 
+
     @Override
-    public R<?> login(String userOpenId) {
-        UserInfo userInfo = userMapper.queryUser(userOpenId);
+    public R<?> login(String userName) {
+        UserInfo userInfo = userMapper.queryUser(userName);
         if (userInfo != null) {
             if (userInfo.getChargingPileId() != null) {
-                return R.ok(userInfo.getChargingPileId());
+                System.out.println(userMapper.queryPile(userName));
+                return R.ok(userMapper.queryPile(userName));
             }else
-                return R.fail(ErrorEnum.CHARGING_PLIE_ID_NO_EXIST_ERROR, "没有绑定充电桩");
+                return R.fail(ErrorEnum.CHARGING_PLIE_ID_NO_CONNECT_ERROR, "充电桩未连接");
         } else {
             // 用户不存在
             return R.fail(ErrorEnum.USERNAME_NO_EXIST_ERROR, "用户不存在");
