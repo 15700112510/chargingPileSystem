@@ -2,8 +2,6 @@ package com.example.chargingPileSystem.controller;
 
 import com.example.chargingPileSystem.Service.UserService;
 import com.example.chargingPileSystem.commen.R;
-import com.example.chargingPileSystem.domain.UserInfo;
-import com.sun.org.apache.xalan.internal.xsltc.dom.SortingIterator;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -14,13 +12,13 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    @PostMapping("/login")
-        public R<?> login(@RequestBody UserInfo user) {
-        return userService.login(user.getUserOpenId());
+    @GetMapping("/login")
+    public R<?> login(@RequestBody String userName) {
+        return userService.login(userName);
     }
 
     @PostMapping("/register")
-    public R<?> register(@RequestParam String userName,@RequestParam String chargingPileId) {
+    public R<?> register(@RequestParam String userName, @RequestParam String chargingPileId) {
         return userService.register(userName, chargingPileId);
     }
 }
