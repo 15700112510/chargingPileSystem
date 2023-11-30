@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
             if (userInfo.getChargingPileId() != null) {
                 return R.ok(userInfo.getChargingPileId());
             }else
-                return R.fail(ErrorEnum.CHARGING_PLIE_ID_NO_EXIST_ERROR, "没有绑定充电桩");
+                return R.fail(ErrorEnum.CHARGING_PLIE_ID_NO_CONNECT_ERROR, "充电桩未连接");
         } else {
             // 用户不存在
             return R.fail(ErrorEnum.USERNAME_NO_EXIST_ERROR, "用户不存在");
