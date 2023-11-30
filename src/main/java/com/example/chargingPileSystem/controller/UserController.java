@@ -2,6 +2,7 @@ package com.example.chargingPileSystem.controller;
 
 import com.example.chargingPileSystem.Service.UserService;
 import com.example.chargingPileSystem.commen.R;
+import com.example.chargingPileSystem.domain.UserInfo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -13,8 +14,8 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/login")
-    public R<?> login(@RequestBody String userName) {
-        return userService.login(userName);
+    public R<?> login(@RequestBody UserInfo user){
+        return userService.login(user.getUserName());
     }
 
     @PostMapping("/register")

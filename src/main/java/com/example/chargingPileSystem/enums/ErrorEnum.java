@@ -10,6 +10,7 @@ public enum ErrorEnum {
     CHARGING_PLIE_CLOSING_ERROR(30010, "关闭充电失败"),
     CHARGING_PLIE_APPOINTMENT_ERROR(30011, "预约充电失败"),
     CHARGING_PLIE_ID_NO_CONNECT_ERROR(30012,"充电桩未连接");
+
     private final int code;
     private final String msg;
 

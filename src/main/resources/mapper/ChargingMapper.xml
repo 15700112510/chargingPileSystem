@@ -3,7 +3,8 @@
 <mapper namespace="com.example.chargingPileSystem.mapper.ChargingMapper">
 
     <select id="queryChargingPileState" resultType="com.example.chargingPileSystem.form.StateForm">
-        select sys_charging_pile_record.charging_time,
+        select sys_charging_pile_info.ble_name,
+            sys_charging_pile_record.charging_time,
                sys_charging_pile_info.voltage,
                sys_charging_pile_info.current,
                sys_charging_pile_info.power
