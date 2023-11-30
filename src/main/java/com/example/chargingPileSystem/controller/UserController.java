@@ -13,7 +13,7 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public R<?> login(@RequestBody UserInfo user){
         return userService.login(user.getUserName());
     }
