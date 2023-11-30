@@ -13,13 +13,13 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public R<?> login(@RequestBody UserInfo user){
         return userService.login(user.getUserName());
     }
 
     @PostMapping("/register")
-    public R<?> register(@RequestParam String userName, @RequestParam String chargingPileId) {
-        return userService.register(userName, chargingPileId);
+    public R<?> register(@RequestBody UserInfo user) {
+        return userService.register(user.getUserName(), user.getChargingPileId());
     }
 }
