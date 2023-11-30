@@ -4,7 +4,7 @@
 
     <insert id="register">
         insert into sys_user_info(user_name,charging_pile_id)
-        values (#{userName}, #{chargingPileId})
+        values (#{userName},#{chargingPileId})
     </insert>
 
     <select id="queryUser" resultType="com.example.chargingPileSystem.domain.UserInfo">
