@@ -16,6 +16,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public R<?> login(String userOpenId) {
         UserInfo userInfo = userMapper.queryUser(userOpenId);
+        System.out.println("userOpenId"+userOpenId+"userInfo"+userInfo);
+
         if (userInfo != null) {
             if (userInfo.getChargingPileId() != null) {
                 return R.ok(userInfo.getChargingPileId());
