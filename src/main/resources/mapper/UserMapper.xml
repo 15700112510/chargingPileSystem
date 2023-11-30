@@ -8,7 +8,17 @@
     </insert>
 
     <select id="queryUser" resultType="com.example.chargingPileSystem.domain.UserInfo">
-        select charging_pile_id from sys_user_info where user_name = #{userName}
+        select charging_pile_id
+        from sys_user_info where user_name = #{userName}
+    </select>
+
+    <select id="queryPile" resultType="com.example.chargingPileSystem.domain.UserInfo">
+        select sys_user_info.charging_pile_id,
+               sys_charging_pile_info.ble_name
+        from sys_user_info
+        inner join sys_charging_pile_info
+        on sys_user_info.charging_pile_id = sys_charging_pile_info.charging_pile_id
+        where sys_user_info.user_name = #{userName}
     </select>
 
     <select id="queryUserOpenId" resultType="java.lang.String">

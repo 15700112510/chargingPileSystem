@@ -19,7 +19,8 @@ public class UserServiceImpl implements UserService {
         UserInfo userInfo = userMapper.queryUser(userName);
         if (userInfo != null) {
             if (userInfo.getChargingPileId() != null) {
-                return R.ok(userInfo.getChargingPileId());
+                System.out.println(userMapper.queryPile(userName));
+                return R.ok(userMapper.queryPile(userName));
             }else
                 return R.fail(ErrorEnum.CHARGING_PLIE_ID_NO_CONNECT_ERROR, "充电桩未连接");
         } else {
