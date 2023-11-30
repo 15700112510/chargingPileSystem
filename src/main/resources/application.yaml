@@ -28,4 +28,4 @@ mybatis:
 
 logging:
   level:
-    com.example.chargingPileSystem.mapper: INFO
+    com.example.chargingPileSystem.mapper: info
