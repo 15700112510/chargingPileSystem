@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface UserMapper {
     public UserInfo queryUser(String userName);
+    public String flush(String userName);
 
     public LoginForm queryPile(String userName);
 

@@ -32,6 +32,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public R<?> register(String userName,String chargingPileId){
         userMapper.register(userName,chargingPileId);
+        userMapper.flush(userName);
         return R.ok();
     }
 }
