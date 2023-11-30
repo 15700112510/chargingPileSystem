@@ -3,12 +3,12 @@
 <mapper namespace="com.example.chargingPileSystem.mapper.UserMapper">
 
     <insert id="register">
-        insert into sys_user_info(username,charging_pile_id)
-        values (#{userName},#{chargingPileId})
+        insert into sys_user_info(user_name,charging_pile_id)
+        values (#{userName}, #{chargingPileId})
     </insert>
 
     <select id="queryUser" resultType="com.example.chargingPileSystem.domain.UserInfo">
-        select charging_pile_id from sys_user_info where username = #{userName}
+        select charging_pile_id from sys_user_info where user_name = #{userName}
     </select>
 
     <select id="queryUserOpenId" resultType="java.lang.String">
