@@ -9,5 +9,4 @@ public class UserInfo {
     private String updateTime;
     private String userPhone;
     private String chargingPileId;
-    private String bleName;
 }

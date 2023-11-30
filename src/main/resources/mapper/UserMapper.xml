@@ -12,7 +12,7 @@
         from sys_user_info where user_name = #{userName}
     </select>
 
-    <select id="queryPile" resultType="com.example.chargingPileSystem.domain.UserInfo">
+    <select id="queryPile" resultType="com.example.chargingPileSystem.form.LoginForm">
         select sys_user_info.charging_pile_id,
                sys_charging_pile_info.ble_name
         from sys_user_info
