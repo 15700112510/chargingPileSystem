@@ -7,10 +7,6 @@
         values (#{userName},#{chargingPileId})
     </insert>
 
-    <select id="flush" resultType="java.lang.String">
-        flush tables
-    </select>
-
     <select id="queryUser" resultType="com.example.chargingPileSystem.domain.UserInfo">
         select charging_pile_id
         from sys_user_info where user_name = #{userName}
