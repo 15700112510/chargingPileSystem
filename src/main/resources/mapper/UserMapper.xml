@@ -3,7 +3,7 @@
 <mapper namespace="com.example.chargingPileSystem.mapper.UserMapper">
 
     <insert id="register">
-        insert into sys_user_info(username,charging_pile_id)
+        insert into sys_user_info(user_name,charging_pile_id)
         values (#{userName},#{chargingPileId})
     </insert>
 
