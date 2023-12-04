@@ -11,7 +11,7 @@
                from sys_charging_pile_info
                    inner join sys_charging_pile_record
                        on sys_charging_pile_info.charging_pile_id = sys_charging_pile_record.charging_pile_id
-               where sys_charging_pile_record.charging_pile_id = #{ChargingPileId}
+               where sys_charging_pile_record.charging_pile_id = #{chargingPileId}
     </select>
 
     <select id="queryUpTime" resultType="java.lang.String">
@@ -23,7 +23,7 @@
     <select id="queryStage" resultType="java.lang.Integer">
         select stage
         from sys_charging_pile_record
-        where charging_pile_id = #{ChargingPileId}
+        where charging_pile_id = #{chargingPileId}
     </select>
 
 </mapper>

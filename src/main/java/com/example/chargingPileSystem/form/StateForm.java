@@ -6,7 +6,6 @@ import java.sql.Timestamp;
 
 @Data
 public class StateForm {
-
     //冲充桩名称
     private String bleName;
     //充电开始时间
@@ -20,6 +19,8 @@ public class StateForm {
 
     //充电功率；
     private String power;
+
+
 
 
 

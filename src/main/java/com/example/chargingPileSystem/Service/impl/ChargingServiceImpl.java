@@ -16,11 +16,15 @@ public class ChargingServiceImpl implements ChargingService {
 
     @Override
     public R<?> state(String chargingPileId) {
-        int Stage = chargingMapper.queryStage(chargingPileId);
-        if (!(Stage == 12)){
+
+        int stage = chargingMapper.queryStage(chargingPileId);
+//        System.out.println(stage);
+//        return R.ok();
+        if (!(stage == 12)) {
             return R.fail(ErrorEnum.CHARGING_PLIE_ID_NO_CONNECT_ERROR,"充电桩未连接");
         }
         StateForm stateForm = chargingMapper.queryChargingPileState(chargingPileId);
+        System.out.println(stateForm);
         return R.ok(stateForm);
     }
 }
