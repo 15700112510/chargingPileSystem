@@ -2,17 +2,19 @@ spring:
   # 服务名称
   application:
     name: workshop-system
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.50.128:8848 # nacos地址
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: password
-    url: jdbc:mysql://192.168.50.128:3306/system?characterEncoding=utf8&useUnicode=true&verifyServerCertificate=false&useSSL=false&requireSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://119.45.119.119:13306/charging_pile_system?characterEncoding=utf8&useUnicode=true&verifyServerCertificate=false&useSSL=false&requireSSL=false&serverTimezone=Asia/Shanghai
     type: com.alibaba.druid.pool.DruidDataSource
 
 mqtt:
   enable: true
   host: tcp://211.103.33.70:2883
-
   username: root
   password: password
   timeout: 10
