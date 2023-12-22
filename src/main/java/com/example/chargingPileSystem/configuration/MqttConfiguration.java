@@ -1,6 +1,5 @@
 package com.example.chargingPileSystem.configuration;
 
-import com.example.chargingPileSystem.commen.BeanFactoryWrapper;
 import com.example.chargingPileSystem.mqtt.MqttProperties;
 import com.example.chargingPileSystem.mqtt.MsgProcessor;
 import com.example.chargingPileSystem.mqtt.MsgProcessorImpl;
@@ -14,7 +13,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.integration.handler.MessageProcessor;
 
 @Slf4j
 @Configuration(proxyBeanMethods = false) //Spring不要为该类创建代理实例，而是直接使用原始实例
