@@ -9,31 +9,31 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
 @Slf4j
 @Component
 public class MyMqttClient {
     private final MqttProperties mqttProperties;
     private final DefaultListableBeanFactory beanFactoryWrapper;
 
+    private final MsgProcessor msgProcessor;
+
     private MqttClient mqttClient;
 
-    public MyMqttClient(MqttProperties mqttProperties, DefaultListableBeanFactory beanFactoryWrapper) {
+    public MyMqttClient(MqttProperties mqttProperties, DefaultListableBeanFactory beanFactoryWrapper,MsgProcessor msgProcessor,MqttClient mqttClient) {
         this.mqttProperties = mqttProperties;
         this.beanFactoryWrapper = beanFactoryWrapper;
+        this.msgProcessor =  msgProcessor;
+        this.mqttClient = mqttClient;
     }
 
     @PostConstruct
     public void init() throws MqttException {
-        try {
-            mqttClient = beanFactoryWrapper.getBean(MqttClient.class);
-        } catch (NoSuchBeanDefinitionException e) {
-            log.debug("Mqtt is unable now");
-
-        }
         // 连接服务器
         connect(mqttClient, mqttProperties);
         mqttClient.subscribe(mqttProperties.getTopic());
-        mqttClient.setCallback(new mqttCallBack(mqttProperties, mqttClient,beanFactoryWrapper));
+        mqttClient.setCallback(new mqttCallBack(mqttProperties, mqttClient, msgProcessor));
     }
 
     /**

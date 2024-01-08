@@ -1,7 +1,8 @@
 package com.example.chargingPileSystem.mqtt;
-import com.example.chargingPileSystem.commen.BeanFactoryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
 import java.util.Arrays;
 
@@ -10,13 +11,13 @@ public class mqttCallBack implements MqttCallback {
     private MqttClient mqttClient;
     private final MqttProperties mqttProperties;
     private final MsgProcessor msgProcessor;
-    private final BeanFactoryWrapper beanFactoryWrapper;
+    @Autowired
+    private DefaultListableBeanFactory beanFactoryWrapper;
 
-    public mqttCallBack(MqttProperties mqttProperties, MqttClient mqttClient, BeanFactoryWrapper beanFactoryWrapper) {
+    public mqttCallBack(MqttProperties mqttProperties, MqttClient mqttClient, MsgProcessor msgProcessor) {
         this.mqttClient = mqttClient;
         this.mqttProperties = mqttProperties;
-        this.beanFactoryWrapper = beanFactoryWrapper;
-        this.msgProcessor = this.beanFactoryWrapper.getBean(MsgProcessor.class);
+        this.msgProcessor = msgProcessor;
     }
 
     @Override
@@ -26,8 +27,7 @@ public class mqttCallBack implements MqttCallback {
         log.debug("Ready to reconnect to broker [{}]", mqttProperties.getHost());
 
         beanFactoryWrapper.removeBeanDefinition("mqttClient");
-        beanFactoryWrapper.registerBeanDefinition(
-                "mqttClient", MqttClient.class, mqttProperties.getHost(), mqttProperties.getClientId(), null);
+        beanFactoryWrapper.registerSingleton("mqttClient", mqttClient);
         this.mqttClient = beanFactoryWrapper.getBean(MqttClient.class);
 
         try {

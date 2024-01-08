@@ -1,20 +1,30 @@
 spring:
   # 服务名称
   application:
-    name: workshop-system
+    name: charging-pile-system
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.50.128:8848 # nacos地址
+        server-addr: 43.142.80.254:9848 # nacos地址
   datasource:
     username: root
     password: password
-    url: jdbc:mysql://119.45.119.119:13306/charging_pile_system?characterEncoding=utf8&useUnicode=true&verifyServerCertificate=false&useSSL=false&requireSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://43.142.80.254:13306/charging_pile_system?characterEncoding=utf8&useUnicode=true&verifyServerCertificate=false&useSSL=false&requireSSL=false&serverTimezone=Asia/Shanghai
     type: com.alibaba.druid.pool.DruidDataSource
+  redis:
+    host: 43.142.80.254
+    port: 6479
+    password: password
+    lettuce:
+      pool:
+        max-active:  8
+        max-wait: 100
+        max-idle: 8
+        min-idle: 0
 
 mqtt:
   enable: true
-  host: tcp://211.103.33.70:2883
+  host: tcp://101.132.244.232:2883
   username: root
   password: password
   timeout: 10

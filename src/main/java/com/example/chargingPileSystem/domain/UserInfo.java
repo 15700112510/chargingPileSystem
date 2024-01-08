@@ -7,6 +7,9 @@ public class UserInfo {
     private String userOpenId;
     private String userName;
     private String updateTime;
-    private String userPhone;
+    private Long userPhone;
+    private String password;
     private String chargingPileId;
+    private Integer role;
+    private String slat;
 }

@@ -19,12 +19,10 @@ import org.springframework.context.annotation.DependsOn;
 @EnableConfigurationProperties(MqttProperties.class)
 public class MqttConfiguration implements InitializingBean {
     private  final MqttProperties mqttProperties;
-    private final BeanFactoryWrapper beanFactoryWrapper;
     private MqttClient mqttClient;
 
-    public MqttConfiguration(MqttProperties mqttProperties, BeanFactoryWrapper beanFactoryWrapper) {
+    public MqttConfiguration(MqttProperties mqttProperties) {
         this.mqttProperties = mqttProperties;
-        this.beanFactoryWrapper = beanFactoryWrapper;
     }
 
     @Bean
