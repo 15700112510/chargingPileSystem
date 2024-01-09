@@ -1,37 +1,40 @@
 package com.example.chargingPileSystem.mqtt;
 
-import com.example.chargingPileSystem.commen.BeanFactoryWrapper;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.paho.client.mqttv3.*;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
 @Slf4j
 @Component
 public class MyMqttClient {
     private final MqttProperties mqttProperties;
-    private final BeanFactoryWrapper beanFactoryWrapper;
+    private final DefaultListableBeanFactory beanFactoryWrapper;
+
+    private final MsgProcessor msgProcessor;
+
     private MqttClient mqttClient;
 
-    public MyMqttClient(MqttProperties mqttProperties, BeanFactoryWrapper beanFactoryWrapper) {
+    public MyMqttClient(MqttProperties mqttProperties, DefaultListableBeanFactory beanFactoryWrapper,MsgProcessor msgProcessor,MqttClient mqttClient) {
         this.mqttProperties = mqttProperties;
         this.beanFactoryWrapper = beanFactoryWrapper;
+        this.msgProcessor =  msgProcessor;
+        this.mqttClient = mqttClient;
     }
 
 
     @PostConstruct
     public void init() throws MqttException {
-        try {
-            mqttClient = beanFactoryWrapper.getBean(MqttClient.class);
-        } catch (NoSuchBeanDefinitionException e) {
-            log.debug("Mqtt is unable now");
-
-        }
         // 连接服务器
         connect(mqttClient, mqttProperties);
         mqttClient.subscribe(mqttProperties.getTopic());
-        mqttClient.setCallback(new mqttCallBack(mqttProperties, mqttClient,beanFactoryWrapper));
+        mqttClient.setCallback(new mqttCallBack(mqttProperties, mqttClient, msgProcessor));
     }
 
     /**

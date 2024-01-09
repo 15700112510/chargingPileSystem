@@ -6,12 +6,11 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface UserMapper {
-    public UserInfo queryUser(String userName);
-    public String flush(String userName);
+    public UserInfo queryUserByPhone(long userPhone);
 
     public LoginForm queryPile(String userName);
 
-    public int register(String userName,String chargingPileId);
+    public int register(UserInfo userInfo);
 
     public String queryUserOpenId(String chargingPileId);
 }

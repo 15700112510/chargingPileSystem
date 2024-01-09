@@ -3,13 +3,13 @@
 <mapper namespace="com.example.chargingPileSystem.mapper.UserMapper">
 
     <insert id="register">
-        insert into sys_user_info(user_name,charging_pile_id)
-        values (#{userName},#{chargingPileId})
+        insert into sys_user_info(user_open_id,user_name,user_phone,password,charging_pile_id,role,slat)
+        values (#{userOpenId},#{userName},#{userPhone},#{password},#{chargingPileId},#{role},#{slat})
     </insert>
 
-    <select id="queryUser" resultType="com.example.chargingPileSystem.domain.UserInfo">
-        select charging_pile_id
-        from sys_user_info where user_name = #{userName}
+    <select id="queryUserByPhone" resultType="com.example.chargingPileSystem.domain.UserInfo">
+        select *
+        from sys_user_info where user_phone = #{userPhone}
     </select>
 
     <select id="queryPile" resultType="com.example.chargingPileSystem.form.LoginForm">

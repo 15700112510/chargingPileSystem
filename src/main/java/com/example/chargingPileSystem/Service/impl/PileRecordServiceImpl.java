@@ -22,13 +22,11 @@ public class PileRecordServiceImpl implements PileRecordService {
     private ChargingPileRecordMapper chargingPileRecordMapper;
     @Resource
     private MqttClient mqttClient;
-    String topic;
-    String content;
 
     @Override
     public R<?> openPile(String chargingPileId) throws MqttException {
-        content = "POWER_ENABLE";
-        topic = "CDZ/" + chargingPileId + "/Config";
+        String content = "POWER_ENABLE";
+        String topic = "CDZ/" + chargingPileId + "/Config";
         MqttMessage msg = new MqttMessage(content.getBytes());
         if (chargingPileInfoMapper.queryStage(chargingPileId).equals("6")) {
             mqttClient.publish(topic, msg);
@@ -39,8 +37,8 @@ public class PileRecordServiceImpl implements PileRecordService {
 
     @Override
     public R<?> closePile(String chargingPileId) throws MqttException {
-        content = "POWER_DISABLE";
-        topic = "CDZ/" + chargingPileId + "/Config";
+        String content = "POWER_DISABLE";
+        String topic = "CDZ/" + chargingPileId + "/Config";
         MqttMessage msg = new MqttMessage(content.getBytes());
         if (chargingPileRecordMapper.queryLastRecord(chargingPileId).getDownTime() == null) {
             mqttClient.publish(topic, msg);
@@ -51,9 +49,8 @@ public class PileRecordServiceImpl implements PileRecordService {
 
     @Override
     public R<?> appointmentTime(String chargingPileId, String appointmentTime) throws MqttException {
-        content = appointmentTime;
-        topic = "CDZ/" + chargingPileId + "/Config";
-        MqttMessage msg = new MqttMessage(content.getBytes());
+        String topic = "CDZ/" + chargingPileId + "/Config";
+        MqttMessage msg = new MqttMessage(appointmentTime.getBytes());
         if (chargingPileRecordMapper.queryLastRecord(chargingPileId).getDownTime() == null) {
             mqttClient.publish(topic, msg);
             return R.ok("充电桩预约成功");

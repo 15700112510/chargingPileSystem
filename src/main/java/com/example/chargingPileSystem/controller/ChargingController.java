@@ -14,7 +14,7 @@ public class ChargingController {
     private ChargingService chargingService;
 
     @PostMapping( "/state")
-    public R<?> state(@RequestBody ChargingPileRecord chargingPileRecord)  {
+    public R<?> state(@RequestBody ChargingPileRecord chargingPileRecord) {
         return chargingService.state(chargingPileRecord.getChargingPileId());
     }
 
