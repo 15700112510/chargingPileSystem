@@ -102,7 +102,7 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
             //1. “CAUSE”：0 正常运行的周期上报 2. “CAUSE”：1 异常状态下的周期上报 3. “CAUSE”：2 异常动作上报 4. “CAUSE”：3 异常解除动作上报 5. “CAUSE”：4 主闸动作上报 6. “CAUSE”：5 CP握手成功 7. “CAUSE”：6 CP握手脱离 8. “CAUSE”：7 Config信息回复
             String cause = strings[12];
 
-            //最近一次主闸动作指令来源:1,1,23,7,4,61879//2//说明：刷卡，合闸，23年，7月，4号，61879秒
+            //最近一次主闸动作指令来源:1,1,23,7,4,61879//2//说明：刷卡，合闸，23年，，47月号，61879秒
             String odr = strings[13];
 
             String[] chargingPileAction = odr.split(",");
@@ -170,7 +170,6 @@ public class MsgProcessorImpl implements MsgProcessor, InitializingBean {
                 //  数据库更新chargingPlieRecord
                 contrastChargingPileRecord(imei, chargingPileRecord, gateStatus, chargingUpTime);
             }
-
 
         }
 

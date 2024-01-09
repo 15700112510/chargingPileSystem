@@ -19,6 +19,7 @@ public class MyMqttClient {
         this.beanFactoryWrapper = beanFactoryWrapper;
     }
 
+
     @PostConstruct
     public void init() throws MqttException {
         try {
