@@ -2,17 +2,13 @@ spring:
   # 服务名称
   application:
     name: charging-pile-system
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 43.142.80.254:9848 # nacos地址
   datasource:
     username: root
     password: password
-    url: jdbc:mysql://43.142.80.254:13306/charging_pile_system?characterEncoding=utf8&useUnicode=true&verifyServerCertificate=false&useSSL=false&requireSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://118.31.104.26:13306/new_charging_pile_system?characterEncoding=utf8&useUnicode=true&verifyServerCertificate=false&useSSL=false&requireSSL=false&serverTimezone=Asia/Shanghai
     type: com.alibaba.druid.pool.DruidDataSource
   redis:
-    host: 43.142.80.254
+    host: 118.31.104.26
     port: 6479
     password: password
     lettuce:

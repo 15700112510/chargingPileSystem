@@ -58,6 +58,8 @@ public class UserServiceImpl implements UserService {
         PrivateKey privateKey = redisUtil.getPrivateKey();
         String decodePsw = RSAUtils.decrypt(loginForm.getPassword(), privateKey);
         //加盐加密
+
+
         String salt = userInfo.getSlat();
         String hashPsw = HashEncodeUtil.getEncodePsw(decodePsw,salt);
         if (!userInfo.getPassword().equals(hashPsw)) {
@@ -74,10 +76,10 @@ public class UserServiceImpl implements UserService {
             return R.fail(ErrorEnum.USERNAME_EMPTY_ERROR);
         }
 
-        //判断充电桩是否绑定
-        if (userInfo.getChargingPileId() == null) {
-            return R.fail(ErrorEnum.CHARGING_PLIE_ID_EMPTY_ERROR);
-        }
+//        //判断充电桩是否绑定
+//        if (userInfo.getChargingPileId() == null) {
+//            return R.fail(ErrorEnum.CHARGING_PLIE_ID_EMPTY_ERROR);
+//        }
 
         //判断openid是否为空
         if (userInfo.getUserOpenId() == null) {
@@ -125,10 +127,10 @@ public class UserServiceImpl implements UserService {
             return R.fail(ErrorEnum.USERNAME_EMPTY_ERROR);
         }
 
-        //判断充电桩是否为空
-        if (userInfo.getChargingPileId() == null) {
-            return R.fail(ErrorEnum.CHARGING_PLIE_ID_EMPTY_ERROR);
-        }
+//        //判断充电桩是否为空
+//        if (userInfo.getChargingPileId() == null) {
+//            return R.fail(ErrorEnum.CHARGING_PLIE_ID_EMPTY_ERROR);
+//        }
 
         //判断openid是否为空
         if (userInfo.getUserOpenId() == null) {

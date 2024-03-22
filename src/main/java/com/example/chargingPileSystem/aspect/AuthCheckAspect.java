@@ -4,8 +4,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -18,8 +16,14 @@ import java.util.Map;
 public class AuthCheckAspect {
     private static final String EXECUTE = "execution(* com.example.chargingPileSystem.controller.*.*(..))";
     public static Map<String, Object> claims;
-    @Resource
-    private HttpServletRequest httpServletRequest;
+
+    private final HttpServletRequest httpServletRequest;
+
+    public AuthCheckAspect(HttpServletRequest httpServletRequest) {
+        System.out.println(httpServletRequest.getClass().getSimpleName());
+        System.out.println(httpServletRequest);
+        this.httpServletRequest = httpServletRequest;
+    }
 
     // 定义切点
     @Pointcut(value = EXECUTE)
