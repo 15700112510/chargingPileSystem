@@ -40,4 +40,9 @@
         from sys_charging_pile_info
         where charging_pile_id = #{ChargingPileId}
     </select>
+    <select id="queryStatus" resultType="java.lang.Integer">
+        select status
+        from sys_charging_pile_info
+        where charging_pile_id = #{ChargingPileId}
+    </select>
 </mapper>

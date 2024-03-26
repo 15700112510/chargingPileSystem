@@ -1,4 +1,4 @@
-package com.example.chargingPileSystem.Service;
+package com.example.chargingPileSystem.Service.jsapi;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.example.chargingPileSystem.commen.R;

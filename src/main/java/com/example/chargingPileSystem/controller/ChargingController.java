@@ -1,6 +1,6 @@
 package com.example.chargingPileSystem.controller;
 
-import com.example.chargingPileSystem.Service.ChargingService;
+import com.example.chargingPileSystem.Service.jsapi.ChargingService;
 import com.example.chargingPileSystem.commen.R;
 import com.example.chargingPileSystem.domain.ChargingPileRecord;
 import org.springframework.web.bind.annotation.*;

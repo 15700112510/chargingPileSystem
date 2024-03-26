@@ -16,4 +16,6 @@ public interface ChargingMapper {
 
     //获取充电CP信号
     public int queryStage(String chargingPileId);
+
+
 }
