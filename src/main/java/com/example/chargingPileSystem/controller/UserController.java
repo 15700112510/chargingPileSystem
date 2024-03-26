@@ -1,5 +1,6 @@
 package com.example.chargingPileSystem.controller;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.example.chargingPileSystem.Service.UserService;
 import com.example.chargingPileSystem.annotation.AllowedRole;
 import com.example.chargingPileSystem.commen.R;
@@ -21,20 +22,26 @@ public class UserController {
     private RedisUtil redisUtil;
 
 
-    @PostMapping("/login")
-    public R<?> login(@RequestBody LoginForm loginForm) throws Exception {
-        return userService.login(loginForm);
-    }
+//    @PostMapping("/login")
+//    public R<?> login(@RequestBody LoginForm loginForm) throws Exception {
+//        return userService.login(loginForm);
+//    }
 
     @GetMapping("/publicKey")
     public String getPublicKey() throws Exception {
         return RSAUtils.getPublicKeyStr(redisUtil.getPublicKey());
     }
 
-    @PostMapping("/register")
-    public R<?> register(@RequestBody UserInfo userInfo) throws Exception {
-        return userService.register(userInfo);
+    @GetMapping("/getPhoneNumber")
+    public JSONObject getPhoneNumber(String code) throws Exception {
+        return userService.getPhoneNumber(code);
     }
+
+//
+//    @PostMapping("/register")
+//    public R<?> register(@RequestBody UserInfo userInfo) throws Exception {
+//        return userService.register(userInfo);
+//    }
 
     @GetMapping("/test")
     //@AllowedRole(role = 0 )
