@@ -22,20 +22,26 @@ public class UserController {
     private RedisUtil redisUtil;
 
 
-//    @PostMapping("/login")
-//    public R<?> login(@RequestBody LoginForm loginForm) throws Exception {
-//        return userService.login(loginForm);
-//    }
+    @PostMapping("/login")
+    public R<?> login(@RequestBody LoginForm loginForm, HttpServletRequest request) throws Exception {
+        return userService.login(loginForm);
+    }
 
     @GetMapping("/publicKey")
     public String getPublicKey() throws Exception {
         return RSAUtils.getPublicKeyStr(redisUtil.getPublicKey());
     }
 
-    @GetMapping("/getPhoneNumber")
-    public JSONObject getPhoneNumber(String code) throws Exception {
+    @PostMapping("/getPhoneNumber")
+    public R<?> getPhoneNumber(String code) throws Exception {
         return userService.getPhoneNumber(code);
     }
+
+//    @GetMapping("/getToken")
+//    public JSONObject getToken(String code) throws Exception {
+//        return userService.getToken(code);
+//    }
+
 
 //
 //    @PostMapping("/register")

@@ -1,40 +1,254 @@
-package com.example.chargingPileSystem.Service.impl;
+package com.example.chargingPileSystem.Service.jsapi.impl;
 
 import com.alibaba.druid.util.StringUtils;
-import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.example.chargingPileSystem.Service.jsapi.UserService;
 import com.example.chargingPileSystem.commen.R;
-import com.example.chargingPileSystem.constant.JwtConstant;
-import com.example.chargingPileSystem.domain.UserInfo;
-import com.example.chargingPileSystem.enums.ErrorEnum;
-import com.example.chargingPileSystem.form.LoginBackForm;
 import com.example.chargingPileSystem.form.LoginForm;
 import com.example.chargingPileSystem.mapper.UserMapper;
+import com.example.chargingPileSystem.redis.RedisService;
 import com.example.chargingPileSystem.util.*;
+import com.example.chargingPileSystem.wechat.WechatConfigProperties;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.security.SecurityUtil;
-import org.aspectj.apache.bcel.generic.RET;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
-import static com.example.chargingPileSystem.constant.JwtConstant.SECRET;
+import static com.example.chargingPileSystem.enums.ErrorEnum.*;
 
 @Slf4j
-@Service("userService")
+@Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+
+
+    private RestTemplate restTemplate = new RestTemplate();
+    private final WechatConfigProperties wechatConfigProperties;
     @Resource
     private UserMapper userMapper;
 
     @Resource
     private RedisUtil redisUtil;
+
+    @Resource
+    private RedisService redisService;
+
+    public R<?> login(LoginForm loginForm) {
+        Map<String, Object> map = new HashMap<>();
+        String code = loginForm.getCode();
+        JSONObject response = null;
+        try {
+
+            // 1. 想微信服务器发送请求获取用户信息
+            String url = wechatConfigProperties.getWxLoginUrl(code);
+            log.info("===> 请求微信url是: {}", url);
+
+            //2. 远程调用微信接口
+            String res = restTemplate.getForObject(url, String.class);
+            response = JSONObject.parseObject(res);
+
+            //3. 解析返回参数 报错则进行对应处理
+            if (response != null) {
+                //3.1 获取session_key和openid
+                String session_key = response.getString("session_key");
+                String openid = response.getString("openid");
+                log.info("===> openid:  {}", openid);
+                if (session_key == null || openid == null) {
+                    log.error("小程序授权失败,session_key或open_id是空!");
+                    return R.fail(MISSING_RETURN_PARAMETER);
+                }
+                log.info("===> 微信回调信息: {}", response);
+            }
+            return R.ok();
+//
+//            // 解析相应内容（转换成json对象）
+//            JSONObject json = JSONObject.parseObject(res);
+//            log.info("解析code请求结果:" + json.toString());
+//
+//            //获取openid
+//            String openid = json.getString("openid");
+//            log.info("openid:" + openid);
+//
+//            // 获取session_key
+//            String session_key = json.getString("session_key");
+//            log.info("session_key:" + session_key);
+//            map.put("openId", openid);
+//            map.put("session_key", session_key);
+//            String token = JwtUtil.creatToken(map, JwtConstant.VALID_TOKEN_TTL);
+//            redisService.setCacheObject("token", token);
+//            return R.ok(token);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("openId生成失败");
+            return R.fail(PASSWORD_EMPTY_ERROR);//随便写的
+        }
+    }
+
+
+
+//    public R<?> login(LoginForm loginForm) {
+//        Map<String, Object> map = new HashMap<>();
+//        String code = loginForm.getCode();
+//
+//        try {
+//            // 授权（必填）固定
+//            String grantType = "authorization_code";
+//            // 发送请求
+//            String res = String.format("https://api.weixin.qq.com/sns/jscode2session", APPID, SECRET, code, grantType);
+//
+//            // 解析相应内容（转换成json对象）
+//            JSONObject json = JSONObject.parseObject(res);
+//            log.info("解析code请求结果:" + json.toString());
+//
+//            //获取openid
+//            String openid = json.getString("openid");
+//            log.info("openid:" + openid);
+//
+//            // 获取session_key
+//            String session_key = json.getString("session_key");
+//            log.info("session_key:" + session_key);
+//            map.put("openId", openid);
+//            map.put("session_key", session_key);
+//            String token = JwtUtil.creatToken(map, JwtConstant.VALID_TOKEN_TTL);
+//            redisService.setCacheObject("token", token);
+//            return R.ok(token);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            log.error("openId生成失败");
+//            return R.fail(PASSWORD_EMPTY_ERROR);//随便写的
+//        }
+//    }
+
+    public R<?> getPhoneNumber(String code) {
+        System.out.println("调用getPhoneNumber（）");
+        String access_token = getAccessToken();
+        if (access_token == null) {
+            log.info("获取token失败");
+            return null;
+        }
+        log.info("token : {}", access_token);
+        //获取phone
+        String phoneUrl = wechatConfigProperties.getPhoneUrl(access_token);
+        Map<String, Object> map = new HashMap<>();
+        map.put("code", code);
+
+        JSONObject jsonObject = sendPostRestTemplate(phoneUrl, map, JSONObject.class);
+        System.out.println(jsonObject);
+        if (jsonObject.containsKey("errcode")) {
+            /*如果异常码是0 说明正常*/
+            if (!Objects.equals(String.valueOf(jsonObject.get("errcode")), "0")) {
+                log.error("===> 获取手机号的异常信息 : {}", jsonObject + "");
+                return null;
+            }
+        }
+        JSONObject phoneInfo = jsonObject.getJSONObject("phone_info");
+        System.out.println("手机号："+phoneInfo.getString("phoneNumber"));
+        return R.ok(phoneInfo.getString("phoneNumber"));
+    }
+
+    /**
+     * 2. 获取缓存中的AccessToken
+     * <p>
+     * 没有从微信拉取[可配合定时]
+     *
+     * @return accessToken
+     */
+    public String getAccessToken() {
+        /*校验: 缓存中有accessToken的key*/
+        System.out.println("getAccessToken（）");
+        if (redisService.hasKey("access_token")){
+            log.info("取出accessToken成功!");
+            String access_token = (String) redisService.getCacheObject("access_token");
+            return access_token;
+        }
+        return getWxMiniAccessToken();
+    }
+
+    /**
+     * 3. 访问微信官方获取两小时的 accessToken
+     *
+     * @return accessToken
+     */
+    public String getWxMiniAccessToken() {
+        System.out.println("getWxMiniAccessToken（）");
+        Map<String, String> query = new HashMap<>();
+        query.put("grant_type", wechatConfigProperties.getGrantType());//client_credential
+        query.put("secret", wechatConfigProperties.getAppSecret());
+        query.put("appid", wechatConfigProperties.getAppId());
+        try {
+            String aTokenUrl = wechatConfigProperties.getATokenUrl();
+//            String result = restTemplate.getForObject(aTokenUrl,String.class);
+//            if (result == null){
+//                return R.fail(MISSING_RETURN_PARAMETER)
+//            }
+//            Object result = restTemplate.getForEntity(aTokenUrl, JSONObject.class, query);
+
+//            ResponseEntity<JSONObject> responseEntity = restTemplate.postForEntity(aTokenUrl, query, JSONObject.class);
+            ResponseEntity<JSONObject> responseEntity = restTemplate.getForEntity(aTokenUrl, JSONObject.class, query);
+            HttpStatus statusCode = responseEntity.getStatusCode(); //状态码
+
+//            System.out.println(responseEntity.getHeaders());//获取到头信息
+
+            /*校验: 如果接口成功 200*/
+            if (Objects.equals(statusCode.value(), 200)) {
+                JSONObject responseJsonBody = responseEntity.getBody();//响应体
+
+                log.info("[请求微信小程序官方接口] => 获取accessToken请求成功返回值：{}", responseJsonBody);
+
+                if (responseJsonBody == null) {
+                    log.info("微信小程序获取accessToken请求返回result是null！");
+                    return null;
+//                    throw new ServiceException(ResponseEnum.A10005);
+                }
+                //获取accessToken
+                String access_token = responseJsonBody.getString("access_token");
+                if (StringUtils.isEmpty(access_token)) {
+                    log.info("微信小程序获取accessToken请求返回access_token是null！");
+                    return null;
+//                    throw new ServiceException(ResponseEnum.A10005);
+                }
+                //放入缓存中
+                redisService.setCacheObject("access_token", access_token, wechatConfigProperties.getExpiredTime(), TimeUnit.MINUTES);
+
+                return access_token;
+            } else {
+                log.error("微信HttpStatus的StatusCode不是200 {}", statusCode.value());
+                return null;
+//                throw new ServiceException(ResponseEnum.A10005);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.info("微信小程序获取accessToken请求异常信息 {}", e.getMessage());
+            return null;
+//            throw new ServiceException(ResponseEnum.A10005);
+        }
+    }
+
+
+
+
+        /**
+         * 远程调用 restTemplate方法 post请求
+         *
+         * @param url
+         * @param body
+         * @return
+         */
+        public <T>T sendPostRestTemplate(String url, Map<String, Object> body, Class<T> responseType) {
+            return restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(body, null), responseType).getBody();
+        }
+
+
 
 
 //    @Override
@@ -104,7 +318,7 @@ public class UserServiceImpl implements UserService {
 //        return R.ok(loginBackForm);
 //    }
 
-//    @Override
+    //    @Override
 //    public R<?> register(UserInfo userInfo) throws Exception {
 //        if (userMapper.queryUserByPhone(userInfo.getUserPhone()) != null) {
 //            return R.fail(ErrorEnum.USERNAME_NO_EXIST_ERROR);
@@ -153,40 +367,6 @@ public class UserServiceImpl implements UserService {
 //    }
 //
 
-    public JSONObject getPhoneNumber(String code) {
-        JSONObject phone;
-        // 获取token
-        String token_url = String.format("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s", appID, SECRET);
-        try {
-            JSONObject token = JSON.parseObject(HttpClientSslUtils.doGet(token_url));
-            if (token == null) {
-                log.info("获取token失败");
-                return null;
-            }
-            String accessToken = token.getString("access_token");
-            if (StringUtils.isEmpty(accessToken)) {
-                log.info("获取token失败");
-                return null;
-            }
-            log.info("token : {}", accessToken);
-            //获取phone
-            String url = "https://api.weixin.qq.com/wxa/business/getuserphonenumber"
-                    + "?access_token=" + accessToken;
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("code", code);
-            String reqJsonStr = JsonUtil.objToString(jsonObject);
-            phone = JSON.parseObject(HttpClientSslUtils.doPost(url, reqJsonStr));
-
-            if (phone == null) {
-                log.info("获取手机号失败");
-                return null;
-            }
-            return phone;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-
 }
+
+

@@ -18,7 +18,7 @@ import java.lang.reflect.Method;
 @Component
 @Order(1)
 public class RoleAspect {
-    private final String execution = "execution(* com.example.chargingPileSystem.controller.*.*(..))";
+    private final String execution = "execution(* com.example.chargingPileSystem.controller.test.*.*(..))";
 
     @Pointcut(value = execution)
     public void pointcut() {}

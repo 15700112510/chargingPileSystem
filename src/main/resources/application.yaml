@@ -1,4 +1,6 @@
+
 spring:
+
   # 服务名称
   application:
     name: charging-pile-system
@@ -37,3 +39,10 @@ mybatis:
 logging:
   level:
     com.example.chargingPileSystem.mapper: info
+
+# 微信核心参数
+wechat:
+  appId: wx04a5a6484e9716c2
+  appSecret: Zjr12345678912345678912345678900
+server:
+  port: 8089

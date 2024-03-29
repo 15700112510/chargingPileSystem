@@ -8,7 +8,8 @@ import com.example.chargingPileSystem.form.LoginForm;
 import java.security.NoSuchAlgorithmException;
 
 public interface UserService {
-   // public R<?> login(LoginForm loginForm) throws Exception;
+   public R<?> login(LoginForm loginForm) throws Exception;
     //public R<?> register(UserInfo userInfo) throws Exception;
-    public JSONObject getPhoneNumber(String code) throws Exception;
+    public R<?> getPhoneNumber(String code) throws Exception;
+    //public JSONObject getToken(String code) throws Exception;
 }
