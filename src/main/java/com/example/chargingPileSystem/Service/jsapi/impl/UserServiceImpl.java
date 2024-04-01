@@ -195,38 +195,27 @@ public class UserServiceImpl implements UserService {
 
 //            ResponseEntity<JSONObject> responseEntity = restTemplate.postForEntity(aTokenUrl, query, JSONObject.class);
             ResponseEntity<JSONObject> responseEntity = restTemplate.getForEntity(aTokenUrl, JSONObject.class, query);
-            HttpStatus statusCode = responseEntity.getStatusCode(); //状态码
-
-//            System.out.println(responseEntity.getHeaders());//获取到头信息
-
-            /*校验: 如果接口成功 200*/
-            if (Objects.equals(statusCode.value(), 200)) {
-                JSONObject responseJsonBody = responseEntity.getBody();//响应体
-
-                log.info("[请求微信小程序官方接口] => 获取accessToken请求成功返回值：{}", responseJsonBody);
-
-                if (responseJsonBody == null) {
-                    log.info("微信小程序获取accessToken请求返回result是null！");
-                    return null;
-//                    throw new ServiceException(ResponseEnum.A10005);
-                }
-                //获取accessToken
-                String access_token = responseJsonBody.getString("access_token");
-                if (StringUtils.isEmpty(access_token)) {
-                    log.info("微信小程序获取accessToken请求返回access_token是null！");
-                    return null;
-//                    throw new ServiceException(ResponseEnum.A10005);
-                }
-                //放入缓存中
-                redisService.setCacheObject("access_token", access_token, wechatConfigProperties.getExpiredTime(), TimeUnit.MINUTES);
-
-                return access_token;
-            } else {
-                log.error("微信HttpStatus的StatusCode不是200 {}", statusCode.value());
+            // HttpStatus statusCode = responseEntity.getStatusCode(); //状态码
+            JSONObject responseJsonBody = responseEntity.getBody();//响应体
+            log.info("[请求微信小程序官方接口] => 获取accessToken请求成功返回值：{}", responseJsonBody);
+            if (responseJsonBody == null) {
+                log.info("微信小程序获取accessToken请求返回result是null！");
                 return null;
-//                throw new ServiceException(ResponseEnum.A10005);
+//                    throw new ServiceException(ResponseEnum.A10005);
             }
-        } catch (Exception e) {
+            //获取accessToken
+            String access_token = responseJsonBody.getString("access_token");
+            if (StringUtils.isEmpty(access_token)) {
+                log.info("微信小程序获取accessToken请求返回access_token是null！");
+                return null;
+//                    throw new ServiceException(ResponseEnum.A10005);
+            }
+            //放入缓存中
+            redisService.expire("access_token", 120, TimeUnit.MINUTES);
+            //redisService.setCacheObject("access_token", access_token, wechatConfigProperties.getExpiredTime(), TimeUnit.MINUTES);
+
+            return access_token;
+        }catch(Exception e){
             e.printStackTrace();
             log.info("微信小程序获取accessToken请求异常信息 {}", e.getMessage());
             return null;

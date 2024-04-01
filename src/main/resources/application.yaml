@@ -43,6 +43,6 @@ logging:
 # 微信核心参数
 wechat:
   appId: wx04a5a6484e9716c2
-  appSecret: Zjr12345678912345678912345678900
+  appSecret: c8386730e4a0d09d5820a8d4b73e3088
 server:
   port: 8089

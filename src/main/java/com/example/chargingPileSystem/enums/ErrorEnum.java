@@ -22,7 +22,8 @@ public enum ErrorEnum {
     CHARGING_PLIE_ID_NO_CONNECT_ERROR(30015,"充电桩未连接"),
     CHARGING_PLIE_ID_EMPTY_ERROR(30016,"充电桩未绑定"),
     USER_OPEN_ID_EMPTY_ERROR(30017,"充电桩未绑定"),
-    MISSING_RETURN_PARAMETER(30018,"缺少返回参数");
+    MISSING_RETURN_PARAMETER(30018,"缺少返回参数")
+    ;
 
 
 

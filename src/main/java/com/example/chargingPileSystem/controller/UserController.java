@@ -23,7 +23,7 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public R<?> login(@RequestBody LoginForm loginForm, HttpServletRequest request) throws Exception {
+    public R<?> login(@RequestBody LoginForm loginForm ) throws Exception {
         return userService.login(loginForm);
     }
 
@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @PostMapping("/getPhoneNumber")
-    public R<?> getPhoneNumber(String code) throws Exception {
+    public R<?> getPhoneNumber(@RequestParam String code) throws Exception {
         return userService.getPhoneNumber(code);
     }
 

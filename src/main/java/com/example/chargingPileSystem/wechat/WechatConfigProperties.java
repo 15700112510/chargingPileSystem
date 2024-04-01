@@ -15,8 +15,6 @@ public class WechatConfigProperties {
 
     private String appSecret;
 
-    private Integer expiredTime;
-
     private String GrantType = "client_credential";
 
     /**
@@ -26,7 +24,7 @@ public class WechatConfigProperties {
      * @return 请求地址
      */
     public String getWxLoginUrl(String code) {
-        return String.format("${wechat.mini-app.wxBaseRequestUrl}/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code", appId, appSecret, code);
+        return String.format("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code", appId, appSecret, code);
     }
 
     /**
@@ -37,7 +35,7 @@ public class WechatConfigProperties {
      * @return 请求地址
      */
     public String getATokenUrl() {
-        return String.format("${wechat.mini-app.wxBaseRequestUrl}/cgi-bin/token?grant_type=${wechat.mini-app.grantType}&appid=%s&secret=%s", appId, appSecret);
+        return String.format("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s", appId, appSecret);
     }
 
 
@@ -48,7 +46,7 @@ public class WechatConfigProperties {
      * @return
      */
     public String getPhoneUrl(String access_token) {
-        return String.format("${wechat.mini-app.wxBaseRequestUrl}/wxa/business/getuserphonenumber?access_token=%s", access_token);
+        return String.format("https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=%s", access_token);
     }
 
     /**
@@ -58,7 +56,7 @@ public class WechatConfigProperties {
      * @return
      */
     public String getWxACodeUnLimitUrl(String access_token) {
-        return String.format("${wechat.mini-app.wxBaseRequestUrl}/wxa/getwxacodeunlimit?access_token=%s", access_token);
+        return String.format("${wechat.wxBaseRequestUrl}/wxa/getwxacodeunlimit?access_token=%s", access_token);
     }
 
     /**
@@ -68,7 +66,7 @@ public class WechatConfigProperties {
      * @return
      */
     public String getWxACodeUrl(String access_token) {
-        return String.format(" ${wechat.mini-app.wxBaseRequestUrl}/wxa/getwxacode?access_token=%s", access_token);
+        return String.format(" ${wechat.wxBaseRequestUrl}/wxa/getwxacode?access_token=%s", access_token);
     }
 
     /**
@@ -78,6 +76,6 @@ public class WechatConfigProperties {
      * @return
      */
     public String getWxAQrcodeUrl(String access_token) {
-        return String.format("${wechat.mini-app.wxBaseRequestUrl}/cgi-bin/wxaapp/createwxaqrcode?access_token=%s", access_token);
+        return String.format("${wechat.wxBaseRequestUrl}/cgi-bin/wxaapp/createwxaqrcode?access_token=%s", access_token);
     }
 }
