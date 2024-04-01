@@ -68,8 +68,10 @@ public class UserServiceImpl implements UserService {
                     return R.fail(MISSING_RETURN_PARAMETER);
                 }
                 log.info("===> 微信回调信息: {}", response);
+                map.put("session_key",session_key);
+                map.put("openid",openid);
             }
-            return R.ok();
+            return R.ok(map);
 //
 //            // 解析相应内容（转换成json对象）
 //            JSONObject json = JSONObject.parseObject(res);

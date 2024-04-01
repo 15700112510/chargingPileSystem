@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @PostMapping("/getPhoneNumber")
-    public R<?> getPhoneNumber(@RequestParam String code) throws Exception {
+    public R<?> getPhoneNumber(@RequestBody String code) throws Exception {
         return userService.getPhoneNumber(code);
     }
 
