@@ -1,7 +1,6 @@
-package com.example.chargingPileSystem.Service.jsapi.impl;
+package com.example.chargingPileSystem.Service.manege.impl;
 
-import com.alibaba.fastjson2.JSONObject;
-import com.example.chargingPileSystem.Service.jsapi.UserService;
+import com.example.chargingPileSystem.Service.manege.UserService;
 import com.example.chargingPileSystem.commen.R;
 import com.example.chargingPileSystem.constant.JwtConstant;
 import com.example.chargingPileSystem.domain.UserInfo;
@@ -13,13 +12,9 @@ import com.example.chargingPileSystem.util.HashEncodeUtil;
 import com.example.chargingPileSystem.util.JwtUtil;
 import com.example.chargingPileSystem.util.RSAUtils;
 import com.example.chargingPileSystem.util.RedisUtil;
-import org.apache.catalina.security.SecurityUtil;
-import org.aspectj.apache.bcel.generic.RET;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +29,7 @@ public class UserServiceImpl implements UserService {
     private RedisUtil redisUtil;
 
 
-    @Override
+//    @Override
     public R<?> login(LoginForm loginForm) throws Exception {
         Map<String, Object> claims = new HashMap<>();
 
@@ -103,7 +98,7 @@ public class UserServiceImpl implements UserService {
         return R.ok(loginBackForm);
     }
 
-    @Override
+//    @Override
     public R<?> register(UserInfo userInfo) throws Exception {
         if (userMapper.queryUserByPhone(userInfo.getUserPhone()) != null) {
             return R.fail(ErrorEnum.USERNAME_NO_EXIST_ERROR);
@@ -149,10 +144,5 @@ public class UserServiceImpl implements UserService {
         userInfo.setSlat(salt);
         userMapper.register(userInfo);
         return R.ok();
-    }
-
-    @Override
-    public JSONObject getPhoneNumber(String code) throws Exception {
-        return null;
     }
 }
