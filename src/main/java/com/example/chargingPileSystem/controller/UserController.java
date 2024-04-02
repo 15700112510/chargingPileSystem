@@ -2,6 +2,10 @@ package com.example.chargingPileSystem.controller;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.example.chargingPileSystem.Service.jsapi.UserService;
+import com.example.chargingPileSystem.annotation.AllowedRole;
+import com.example.chargingPileSystem.commen.R;
+import com.example.chargingPileSystem.domain.UserInfo;
+import com.example.chargingPileSystem.form.LoginForm;
 import com.example.chargingPileSystem.util.RSAUtils;
 import com.example.chargingPileSystem.util.RedisUtil;
 import org.springframework.web.bind.annotation.*;
@@ -18,20 +22,26 @@ public class UserController {
     private RedisUtil redisUtil;
 
 
-//    @PostMapping("/login")
-//    public R<?> login(@RequestBody LoginForm loginForm) throws Exception {
-//        return userService.login(loginForm);
-//    }
+    @PostMapping("/login")
+    public R<?> login(@RequestBody LoginForm loginForm ) throws Exception {
+        return userService.login(loginForm);
+    }
 
     @GetMapping("/publicKey")
     public String getPublicKey() throws Exception {
         return RSAUtils.getPublicKeyStr(redisUtil.getPublicKey());
     }
 
-    @GetMapping("/getPhoneNumber")
-    public JSONObject getPhoneNumber(String code) throws Exception {
+    @PostMapping("/getPhoneNumber")
+    public R<?> getPhoneNumber(@RequestBody String code) throws Exception {
         return userService.getPhoneNumber(code);
     }
+
+//    @GetMapping("/getToken")
+//    public JSONObject getToken(String code) throws Exception {
+//        return userService.getToken(code);
+//    }
+
 
 //
 //    @PostMapping("/register")

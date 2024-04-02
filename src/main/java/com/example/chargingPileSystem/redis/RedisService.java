@@ -30,6 +30,17 @@ public class RedisService {
     /**
      * 缓存基本的对象，Integer、String、实体类等
      *
+     * @param key   缓存的键值
+     * @param value 缓存的值
+     * @param time  存放的时间
+     */
+    public <T> void setCacheObject(final String key, final Object value,final long time) {
+        redisTemplate.opsForValue().set(key, value, time);
+    }
+
+    /**
+     * 缓存基本的对象，Integer、String、实体类等
+     *
      * @param key      缓存的键值
      * @param value    缓存的值
      * @param timeout  时间

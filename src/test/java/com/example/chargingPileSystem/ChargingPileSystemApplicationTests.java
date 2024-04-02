@@ -2,7 +2,6 @@ package com.example.chargingPileSystem;
 
 import com.alibaba.fastjson2.JSON;
 import com.example.chargingPileSystem.constant.JwtConstant;
-import com.example.chargingPileSystem.exception.TokenExpiredException;
 import com.example.chargingPileSystem.redis.RedisService;
 import com.example.chargingPileSystem.util.JwtUtil;
 import com.example.chargingPileSystem.util.RedisUtil;
@@ -59,6 +58,7 @@ class ChargingPileSystemApplicationTests {
         System.out.println("pare========="+parseToken);
         String userPhone = (String) parseToken.get("userPhone");
         System.out.println(userPhone);
+
         try{
             Claims parseToken1 = JwtUtil.parseJwt("eyJhbGciOiJIUzUxMiJ9.eyJyb2xlIjozLCJ1c2VyUGhvbmUiOjE1NzAwMTEyNTEwLCJleHAiOjE3MDY2MDMxNzB9.GmE9rnUN8ocP2YnXdxzOpQa82F7365Bng6OOGEJ47oAXkxlXtRHA8jq_THGGMWgd6pojgAql-JVQyqEIwg4OUw");
 //            Claims parseToken1 = JwtUtil.parseJwt(token);
