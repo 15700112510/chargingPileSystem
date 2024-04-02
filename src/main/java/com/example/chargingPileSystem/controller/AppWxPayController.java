@@ -29,7 +29,7 @@ import java.util.Map;
  * @project charging_pile_cloud
  */
 @RestController
-@RequestMapping(value = "app/operation",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping("/charging/app/WxPay")
 @Slf4j
 public class AppWxPayController {
 
@@ -47,7 +47,7 @@ public class AppWxPayController {
 
     @PostMapping( "/wxAppPay")
     public Object wxPay(StockUserCharge charge) throws WxPayException {
-        System.out.println("");
+        System.out.println("用户充值参数："+charge);
         if (charge.getUserPhone() == null || charge.getUserPhone().equals("") ){
             return R.fail(ErrorEnum.USER_ID_EMPTY_ERROR,"用户openid为空");
         }else if (userMapper.queryUserByPhone(charge.getUserPhone()) == null ){

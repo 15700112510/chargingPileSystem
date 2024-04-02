@@ -61,7 +61,7 @@ public class ChargingServiceImpl implements ChargingService {
     //创建预定单
     @Override
     public Object createUserCharge(StockUserCharge charge) throws WxPayException {
-
+        System.out.println("创建预定单");
         WxPayUnifiedOrderRequest orderRequest =new WxPayUnifiedOrderRequest();
         String orderNum = System.currentTimeMillis()+ "";
         //用户openid
@@ -79,8 +79,10 @@ public class ChargingServiceImpl implements ChargingService {
         //随机字符串，确保每次付款请求都不同
         orderRequest.setNonceStr(String.valueOf(System.currentTimeMillis())+String.valueOf(new Random().nextInt(1000)));
         System.out.println("微信回调函数"+wxPayService.getPayBaseUrl());
+
         orderRequest.setNotifyUrl(wxPayService.getPayBaseUrl());
         WxPayMpOrderResult wxPayMpOrderResult = wxPayService.createOrder(orderRequest);
+
 
 //        addChargeRecord(null,stockUser.getId(), charge.getFee(),
 //                stockUserCapitalFund.getStockCode(),PayTypeEnum.STATUS_1, WithdrawStatusEnum.STATUS_4, orderNum);

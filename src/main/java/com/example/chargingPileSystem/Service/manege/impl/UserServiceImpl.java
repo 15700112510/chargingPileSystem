@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@Service("userService")
+@Service("mngUserService")
 public class UserServiceImpl implements UserService {
     @Resource
     private UserMapper userMapper;
