@@ -7,7 +7,7 @@ import lombok.Data;
 @Builder
 public class LoginBackForm {
     private String token;
-    private Long userPhone;
+    private String userPhone;
     private String userOpenId;
     private String userName;
     private String chargingPileId;
