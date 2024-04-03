@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 
 @RestController
-@RequestMapping("/api/record")
+@RequestMapping("/charging/api/record")
 public class PileRecordController {
     @Resource
     private PileRecordService pileRecordService;

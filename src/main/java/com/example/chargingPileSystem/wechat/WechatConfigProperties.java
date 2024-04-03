@@ -1,16 +1,20 @@
 package com.example.chargingPileSystem.wechat;
 
+import com.github.binarywang.wxpay.config.WxPayConfig;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 
 @Component
 @Data
 @Slf4j
 @ConfigurationProperties("wechat")
 public class WechatConfigProperties {
-
+    @Resource
+    private WxPayConfig wxPayConfig;
     private String appId;
 
     private String appSecret;
@@ -24,7 +28,8 @@ public class WechatConfigProperties {
      * @return 请求地址
      */
     public String getWxLoginUrl(String code) {
-        return String.format("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code", appId, appSecret, code);
+
+        return String.format("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code", wxPayConfig.getAppId(), appSecret, code);
     }
 
     /**
