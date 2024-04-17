@@ -57,30 +57,30 @@ public class WechatConfigProperties {
     /**
      * 获取不限制的微信二维码url
      *
-     * @param accessToken
+     * @param access_token
      * @return
      */
     public String getWxACodeUnLimitUrl(String access_token) {
-        return String.format("${wechat.wxBaseRequestUrl}/wxa/getwxacodeunlimit?access_token=%s", access_token);
+        return String.format("https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=%s", access_token);
     }
 
     /**
      * 获取(限制一)的微信二维码url
      *
-     * @param accessToken
+     * @param access_token
      * @return
      */
     public String getWxACodeUrl(String access_token) {
-        return String.format(" ${wechat.wxBaseRequestUrl}/wxa/getwxacode?access_token=%s", access_token);
+        return String.format("https://api.weixin.qq.com/wxa/getwxacode?access_token=%s", access_token);
     }
 
     /**
      * 获取(限制二)的微信二维码url
      *
-     * @param accessToken
+     * @param access_token
      * @return
      */
     public String getWxAQrcodeUrl(String access_token) {
-        return String.format("${wechat.wxBaseRequestUrl}/cgi-bin/wxaapp/createwxaqrcode?access_token=%s", access_token);
+        return String.format("https://api.weixin.qq.com/cgi-bin/wxaapp/createwxaqrcode?access_token=%s", access_token);
     }
 }
