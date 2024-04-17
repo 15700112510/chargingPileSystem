@@ -40,9 +40,18 @@ logging:
   level:
     com.example.chargingPileSystem.mapper: info
 
+
 # 微信核心参数
 wechat:
   appId: wx04a5a6484e9716c2
   appSecret: c8386730e4a0d09d5820a8d4b73e3088
+  mchId: 1550892221
+  apiV3Key: Zjr12345678912345678912345678900
+  notifyUrl: https://zeddy.online/charging/app/WxPay/wxBack
+  keyPath: src/main/resources/certificate/apiclient_cert.p12
+  privateKeyPath: src/main/resources/certificate/apiclient_key.pem
+  privateCertPath: src/main/resources/certificate/apiclient_cert.pem
+
+
 server:
   port: 8089
