@@ -14,9 +14,9 @@ import java.util.Date;
 @Data
 public class StockUserCharge {
     //流水号
-    private String swiftNo;
+    private String outTradeNo;
     //用户openid
-    private String userPhone;
+    private String userOpenid;
     //金额
     private int fee;
 //    //创建时间

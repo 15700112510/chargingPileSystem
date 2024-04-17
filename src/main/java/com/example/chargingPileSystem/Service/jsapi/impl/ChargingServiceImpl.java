@@ -1,5 +1,6 @@
 package com.example.chargingPileSystem.Service.jsapi.impl;
 
+import cn.hutool.core.date.DateUtil;
 import com.example.chargingPileSystem.Service.jsapi.ChargingService;
 import com.example.chargingPileSystem.commen.R;
 import com.example.chargingPileSystem.domain.StockUserCharge;
@@ -9,33 +10,45 @@ import com.example.chargingPileSystem.form.StateForm;
 import com.example.chargingPileSystem.mapper.ChargingMapper;
 import com.example.chargingPileSystem.mapper.ChargingPileInfoMapper;
 import com.example.chargingPileSystem.mapper.UserMapper;
+import com.example.chargingPileSystem.util.wechatUtil;
 import com.github.binarywang.wxpay.bean.order.WxPayMpOrderResult;
 import com.github.binarywang.wxpay.bean.request.BaseWxPayRequest;
 import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderRequest;
+import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderV3Request;
+import com.github.binarywang.wxpay.bean.result.WxPayUnifiedOrderV3Result;
+import com.github.binarywang.wxpay.bean.result.enums.TradeTypeEnum;
+import com.github.binarywang.wxpay.config.WxPayConfig;
 import com.github.binarywang.wxpay.constant.WxPayConstants;
 import com.github.binarywang.wxpay.exception.WxPayException;
 import com.github.binarywang.wxpay.service.WxPayService;
+import com.github.binarywang.wxpay.service.impl.WxPayServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Date;
 import java.util.Map;
 import java.util.Random;
 
 @Service
 public class ChargingServiceImpl implements ChargingService {
+
     @Resource
-    private WxPayService wxPayService;
+    private WxPayConfig wxPayConfig;
     @Resource
     private ChargingMapper chargingMapper;
     @Resource
     private ChargingPileInfoMapper chargingPileInfoMapper;
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private HttpServletRequest request;
 
     @Override
     public R<?> state(String chargingPileId) {
@@ -61,27 +74,48 @@ public class ChargingServiceImpl implements ChargingService {
     //创建预定单
     @Override
     public Object createUserCharge(StockUserCharge charge) throws WxPayException {
+        WxPayService wxPayService = getWxPayService(wxPayConfig);
         System.out.println("创建预定单");
-        WxPayUnifiedOrderRequest orderRequest =new WxPayUnifiedOrderRequest();
-        String orderNum = System.currentTimeMillis()+ "";
-        //用户openid
-        orderRequest.setOpenid(charge.getUserPhone());
-        //订单号
-        orderRequest.setOutTradeNo(charge.getSwiftNo());
-        //交易类型（小程序）
-        orderRequest.setTradeType(WxPayConstants.TradeType.JSAPI);
+        WxPayUnifiedOrderV3Request orderRequest =new WxPayUnifiedOrderV3Request ();
 
-        //orderRequest.setSpbillCreateIp(HttpRequestUtil.getIpAddr(request));
-        //订单金额
-        orderRequest.setTotalFee(charge.getFee());
-        //订单描述
-        orderRequest.setBody("充电付款");
-        //随机字符串，确保每次付款请求都不同
-        orderRequest.setNonceStr(String.valueOf(System.currentTimeMillis())+String.valueOf(new Random().nextInt(1000)));
-        System.out.println("微信回调函数"+wxPayService.getPayBaseUrl());
 
-        orderRequest.setNotifyUrl(wxPayService.getPayBaseUrl());
-        WxPayMpOrderResult wxPayMpOrderResult = wxPayService.createOrder(orderRequest);
+//        String orderNum = System.currentTimeMillis()+ "";
+//        //用户openid
+//        orderRequest.setOpenid(charge.getUserOpenid());
+//        //订单号
+//        orderRequest.setOutTradeNo(charge.getOutTradeNo());
+//        //交易类型（小程序）
+//        orderRequest.setTradeType(WxPayConstants.TradeType.JSAPI);
+//
+//        orderRequest.setSpbillCreateIp(wechatUtil.getIpAddr(request));
+//        //订单金额
+//        orderRequest.setTotalFee(charge.getFee());
+//        //订单描述
+//        orderRequest.setBody("充电付款");
+//        //随机字符串，确保每次付款请求都不同
+//        orderRequest.setNonceStr(String.valueOf(System.currentTimeMillis())+String.valueOf(new Random().nextInt(1000)));
+
+        WxPayUnifiedOrderV3Request.Payer payer = new WxPayUnifiedOrderV3Request.Payer();
+        payer.setOpenid(charge.getUserOpenid());
+        WxPayUnifiedOrderV3Request.Amount amount = new WxPayUnifiedOrderV3Request.Amount();
+        amount.setTotal(charge.getFee());
+        amount.setCurrency("CNY");
+        orderRequest.setDescription("充电付款");
+        orderRequest.setOutTradeNo(charge.getOutTradeNo());
+        Date nowDate = new Date();
+        Date dateAfter = new Date(nowDate.getTime() + 300000);
+        String format = DateUtil.format(dateAfter, "yyyy-MM-dd'T'HH:mm:ssXXX");
+        orderRequest.setTimeExpire(format);
+        orderRequest.setNotifyUrl("");
+        orderRequest.setAmount(amount);
+        orderRequest.setPayer(payer);
+
+//        System.out.println("微信回调函数"+wxPayService.getPayBaseUrl());
+        System.out.println("创建订单");
+//        orderRequest.setNotifyUrl(wxPayService.getPayBaseUrl());
+
+        WxPayUnifiedOrderV3Result.JsapiResult wxPayMpOrderResult = wxPayService.createOrderV3(TradeTypeEnum.JSAPI, orderRequest);
+        System.out.println("创建订单完成");
 
 
 //        addChargeRecord(null,stockUser.getId(), charge.getFee(),
@@ -116,6 +150,15 @@ public class ChargingServiceImpl implements ChargingService {
 //                        stockUserCapitalFund.getStockCode());
 //            }
 //        }
+    }
+    public WxPayService getWxPayService(WxPayConfig wxPayConfig) {
+        System.out.println("wxPayService 开始创建");
+        WxPayService payService = new WxPayServiceImpl();
+        System.out.println("wxPayService 构造方法结束");
+        payService.setConfig(wxPayConfig);
+        System.out.println("wxPayService 创建完成");
+        System.out.println("wx04a5a6484e9716c2".equals(payService.getConfig().getAppId()));
+        return payService;
     }
 
 }

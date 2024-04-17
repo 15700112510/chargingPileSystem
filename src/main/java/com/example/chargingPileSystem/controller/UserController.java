@@ -8,6 +8,7 @@ import com.example.chargingPileSystem.domain.UserInfo;
 import com.example.chargingPileSystem.form.LoginForm;
 import com.example.chargingPileSystem.util.RSAUtils;
 import com.example.chargingPileSystem.util.RedisUtil;
+import com.github.binarywang.wxpay.config.WxPayConfig;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -20,7 +21,6 @@ public class UserController {
     private UserService userService;
     @Resource
     private RedisUtil redisUtil;
-
 
     @PostMapping("/login")
     public R<?> login(@RequestBody LoginForm loginForm ) throws Exception {
@@ -51,8 +51,15 @@ public class UserController {
 
     @GetMapping("/test")
     //@AllowedRole(role = 0 )
-    public String test(HttpServletRequest request) {
-        System.out.println("=========="+request.getParameter("name"));
-        return "Hello, World!";
+    public String getTest(@RequestParam String name) {
+        System.out.println("=========="+name);
+        return "getTest!";
+    }
+
+    @PostMapping ("/test")
+    //@AllowedRole(role = 0 )
+    public String postTest(@RequestParam String name) {
+        System.out.println("=========="+name);
+        return "postTest!";
     }
 }

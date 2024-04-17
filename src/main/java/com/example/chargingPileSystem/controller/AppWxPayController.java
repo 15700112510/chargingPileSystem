@@ -3,23 +3,21 @@ package com.example.chargingPileSystem.controller;
 import com.example.chargingPileSystem.Service.jsapi.ChargingService;
 import com.example.chargingPileSystem.commen.R;
 import com.example.chargingPileSystem.domain.StockUserCharge;
-import com.example.chargingPileSystem.domain.UserInfo;
 import com.example.chargingPileSystem.enums.ErrorEnum;
 import com.example.chargingPileSystem.mapper.UserMapper;
 import com.github.binarywang.wxpay.bean.notify.WxPayNotifyResponse;
 import com.github.binarywang.wxpay.bean.notify.WxPayOrderNotifyResult;
+import com.github.binarywang.wxpay.config.WxPayConfig;
 import com.github.binarywang.wxpay.exception.WxPayException;
 import com.github.binarywang.wxpay.service.WxPayService;
-import lombok.extern.slf4j.Slf4j;
+import com.github.binarywang.wxpay.service.impl.WxPayServiceImpl;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 
 /**
  * 用户充值操作
@@ -30,12 +28,12 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/charging/app/WxPay")
-@Slf4j
 public class AppWxPayController {
 
+    @Resource
+    private WxPayConfig wxPayConfig;
 
-    @Autowired
-    WxPayService wxPayService;
+
     @Autowired
     private ChargingService stockUserChargeService;
     @Resource
@@ -46,19 +44,18 @@ public class AppWxPayController {
      */
 
     @PostMapping( "/wxAppPay")
-    public Object wxPay(StockUserCharge charge) throws WxPayException {
-        System.out.println("用户充值参数："+charge);
-        if (charge.getUserPhone() == null || charge.getUserPhone().equals("") ){
-            return R.fail(ErrorEnum.USER_ID_EMPTY_ERROR,"用户openid为空");
-        }else if (userMapper.queryUserByPhone(charge.getUserPhone()) == null ){
-            return R.fail(ErrorEnum.USER_ID_EMPTY_ERROR,"用户openid为不存在");
-        }
+    public Object wxPay(@RequestBody StockUserCharge charge) throws WxPayException {
+
+        System.out.println("用户充值参数："+charge+"测试service:"+wxPayConfig.getAppId());
+//        if (charge.getUserOpenid() == null || charge.getUserOpenid().equals("") ){
+//            return R.fail(ErrorEnum.USER_ID_EMPTY_ERROR,"用户openid为空");
+//        }else if (userMapper.queryUserByPhone(charge.getUserOpenid()) == null ){
+//            return R.fail(ErrorEnum.USER_ID_EMPTY_ERROR,"用户openid为不存在");
+//        }
         Object result= stockUserChargeService.createUserCharge(charge);
 
         return result;
     }
-
-
 
 
     /**
@@ -67,6 +64,7 @@ public class AppWxPayController {
     @ResponseBody
     @RequestMapping("/wxBack")
     public String payNotify(HttpServletRequest request, HttpServletResponse response) {
+        WxPayService wxPayService = getWxPayService(wxPayConfig);
         try {
             System.out.println("进入回调");
             String xmlResult = IOUtils.toString(request.getInputStream(), request.getCharacterEncoding());
@@ -88,9 +86,18 @@ public class AppWxPayController {
 //            }
             return WxPayNotifyResponse.success("处理成功!");
         } catch (Exception e) {
-            log.error("微信回调结果异常,异常原因{}", e.getMessage());
             return WxPayNotifyResponse.fail(e.getMessage());
         }
+    }
+
+    public WxPayService getWxPayService(WxPayConfig wxPayConfig) {
+        System.out.println("wxPayService 开始创建");
+        WxPayService payService = new WxPayServiceImpl();
+        System.out.println("wxPayService 构造方法结束");
+        payService.setConfig(wxPayConfig);
+        System.out.println("wxPayService 创建完成");
+        System.out.println("wx04a5a6484e9716c2".equals(payService.getConfig().getAppId()));
+        return payService;
     }
 
 }
