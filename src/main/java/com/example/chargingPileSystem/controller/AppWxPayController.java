@@ -35,7 +35,7 @@ public class AppWxPayController {
 
 
     @Autowired
-    private ChargingService stockUserChargeService;
+    private ChargingService chargingService;
     @Resource
     private UserMapper userMapper;
 
@@ -52,7 +52,7 @@ public class AppWxPayController {
 //        }else if (userMapper.queryUserByPhone(charge.getUserOpenid()) == null ){
 //            return R.fail(ErrorEnum.USER_ID_EMPTY_ERROR,"用户openid为不存在");
 //        }
-        Object result= stockUserChargeService.createUserCharge(charge);
+        Object result= chargingService.createUserCharge(charge);
 
         return result;
     }
@@ -68,14 +68,15 @@ public class AppWxPayController {
         try {
             System.out.println("进入回调");
             String xmlResult = IOUtils.toString(request.getInputStream(), request.getCharacterEncoding());
+            System.out.println("xmlResult:"+xmlResult);
             WxPayOrderNotifyResult result = wxPayService.parseOrderNotifyResult(xmlResult);
+            System.out.println("回调结果："+result);
             // 结果正确
             String orderId = result.getOutTradeNo();
             String tradeNo = result.getTransactionId();
             String deviceInfo = result.getDeviceInfo();
             String openId = result.getOpenid();
             int totalfeee = result.getTotalFee();
-
 //            //自己处理订单的业务逻辑，需要判断订单是否已经支付过，否则可能会重复调用
 //            StockUserCharge stockUserCharge = stockUserChargeService.getOne(new QueryWrapper<StockUserCharge>()
 //            .eq("swift_no",orderId));

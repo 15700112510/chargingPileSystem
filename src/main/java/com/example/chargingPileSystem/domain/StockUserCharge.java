@@ -19,6 +19,9 @@ public class StockUserCharge {
     private String userOpenid;
     //金额
     private int fee;
+    //充电桩id
+    private int pileId;
+
 //    //创建时间
 //    private Date createTime;
 

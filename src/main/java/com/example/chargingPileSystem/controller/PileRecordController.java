@@ -24,4 +24,6 @@ public class PileRecordController {
     public R< ? > appointmentCharging(@RequestParam String chargingPileId,@RequestParam String appointmentTime) throws MqttException{
         return pileRecordService.appointmentTime(chargingPileId,appointmentTime);
     }
+
+
 }
