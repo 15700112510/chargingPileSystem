@@ -22,6 +22,7 @@ import com.github.binarywang.wxpay.constant.WxPayConstants;
 import com.github.binarywang.wxpay.exception.WxPayException;
 import com.github.binarywang.wxpay.service.WxPayService;
 import com.github.binarywang.wxpay.service.impl.WxPayServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +38,7 @@ import java.util.Map;
 import java.util.Random;
 
 @Service
+@Slf4j
 public class ChargingServiceImpl implements ChargingService {
 
     @Resource
@@ -76,25 +78,8 @@ public class ChargingServiceImpl implements ChargingService {
     public Object createUserCharge(StockUserCharge charge) throws WxPayException {
         WxPayService wxPayService = getWxPayService(wxPayConfig);
         System.out.println("创建预定单");
+
         WxPayUnifiedOrderV3Request orderRequest =new WxPayUnifiedOrderV3Request ();
-
-
-//        String orderNum = System.currentTimeMillis()+ "";
-//        //用户openid
-//        orderRequest.setOpenid(charge.getUserOpenid());
-//        //订单号
-//        orderRequest.setOutTradeNo(charge.getOutTradeNo());
-//        //交易类型（小程序）
-//        orderRequest.setTradeType(WxPayConstants.TradeType.JSAPI);
-//
-//        orderRequest.setSpbillCreateIp(wechatUtil.getIpAddr(request));
-//        //订单金额
-//        orderRequest.setTotalFee(charge.getFee());
-//        //订单描述
-//        orderRequest.setBody("充电付款");
-//        //随机字符串，确保每次付款请求都不同
-//        orderRequest.setNonceStr(String.valueOf(System.currentTimeMillis())+String.valueOf(new Random().nextInt(1000)));
-
         WxPayUnifiedOrderV3Request.Payer payer = new WxPayUnifiedOrderV3Request.Payer();
         payer.setOpenid(charge.getUserOpenid());
         WxPayUnifiedOrderV3Request.Amount amount = new WxPayUnifiedOrderV3Request.Amount();
@@ -111,8 +96,9 @@ public class ChargingServiceImpl implements ChargingService {
         orderRequest.setPayer(payer);
 
 //        System.out.println("微信回调函数"+wxPayService.getPayBaseUrl());
-        System.out.println("创建订单");
 //        orderRequest.setNotifyUrl(wxPayService.getPayBaseUrl());
+        log.info("创建订单");
+
 
         WxPayUnifiedOrderV3Result.JsapiResult wxPayMpOrderResult = wxPayService.createOrderV3(TradeTypeEnum.JSAPI, orderRequest);
         System.out.println("创建订单完成");

@@ -15,6 +15,8 @@ public class ChargingPileInfo {
     private String current;
     //功率
     private String power;
+    //电价:每千瓦时充电价格
+    private double price;
     //累计电量
     private String accumulatedElectricEnergy;
     //状态
