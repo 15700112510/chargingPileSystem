@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.chargingPileSystem.mapper.PaymentMapper">
+
+    <insert id="insertPreOrder">
+        INSERT INTO sys_payment_record (out_trade_no, user_openid, charging_pile_id, amount, status)
+        VALUES (#{outTradeNo}, #{userOpenid}, #{chargingPileId},#{amount}, #{status})
+    </insert>
+
+    <update id="updateOrderStatus">
+        UPDATE sys_payment_record SET  transaction_id = #{transactionId}, charging_record_id = #{chargingRecordId}, status = #{status} WHERE out_trade_no = #{outTradeNo}
+    </update>
+    <update id="updatepay">
+        UPDATE sys_payment_record SET  status = #{status} WHERE out_trade_no = #{outTradeNo}
+    </update>
+
+    <select id="selectByOrderNo" resultType="com.example.chargingPileSystem.domain.PaymentOrder">
+        SELECT * FROM sys_payment_record WHERE out_trade_no = #{outTradeNo} and user_openid = #{userOpenid}
+    </select>
+
+</mapper>

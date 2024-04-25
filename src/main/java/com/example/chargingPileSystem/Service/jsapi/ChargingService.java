@@ -15,19 +15,4 @@ public interface ChargingService {
     public R<?> status(String userOpenId);
 
 
-    /**
-     * 用户充值创建订单
-     * @param charge
-     * @return
-     */
-    Object createUserCharge(StockUserCharge charge) throws WxPayException;
-
-
-
-    /**
-     * 付款成功
-     *
-     * @param stockUserCharge
-     */
-    void withdrawStatusSuccess(StockUserCharge stockUserCharge);
 }

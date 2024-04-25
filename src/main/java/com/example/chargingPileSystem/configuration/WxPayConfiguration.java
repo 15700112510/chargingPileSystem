@@ -43,33 +43,16 @@ public class WxPayConfiguration {
         String strCert = new String(inApiClientCertBytes);
         String strKey = new String(inApiClientKeyBytes);
         System.out.println("inApiClientCertBytes:" + strCert);
-
         System.out.println("inApiClientKeyBytes:" + strKey);
-
         WxPayConfig payConfig = new WxPayConfig();
         payConfig.setAppId("wx04a5a6484e9716c2");
         payConfig.setMchId("1672263753");
         payConfig.setApiV3Key("Zjr12345678912345678912345678900");
         payConfig.setKeyPath("apiclient_cert.p12");//p12
-//        payConfig.setPrivateKeyPath("src/main/resources/certificate/apiclient_key.pem");//私钥
-//        payConfig.setPrivateCertPath("src/main/resources/certificate/apiclient_cert.pem");//证书
         payConfig.setPrivateCertContent(inApiClientCertBytes);//私钥
         payConfig.setPrivateKeyContent(inApiClientKeyBytes);//证书
         payConfig.setNotifyUrl("https://zeddy.online/charging/app/WxPay/wxBack");
         payConfig.setUseSandboxEnv(false);
         return  payConfig;
     }
-
-
-
-//    @Bean
-//    public WxPayService wxPayService(WxPayConfig wxPayConfig) {
-//        System.out.println("wxPayService 开始创建");
-//        WxPayService payService = new WxPayServiceImpl();
-//        System.out.println("wxPayService 构造方法结束");
-//        payService.setConfig(wxPayConfig);
-//        System.out.println("wxPayService 创建完成");
-//        System.out.println("wx04a5a6484e9716c2".equals(payService.getConfig().getAppId()));
-//        return payService;
-//    }
 }
