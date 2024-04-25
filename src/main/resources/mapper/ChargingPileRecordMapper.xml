@@ -26,4 +26,10 @@
         where charging_pile_id = #{chargingPileId}
         ORDER BY id DESC LIMIT 1
     </select>
+
+    <delete id="deleteChargingPileInfo">
+        delete from sys_charging_pile_record
+        where charging_pile_id = #{ChargingPileId}
+    </delete>
+
 </mapper>

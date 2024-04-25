@@ -45,4 +45,14 @@
         from sys_charging_pile_info
         where charging_pile_id = #{ChargingPileId}
     </select>
+    <select id="queryCharging" resultType="java.lang.String">
+        select voltage,current,power,accumulated_electric_energy
+        from sys_charging_pile_info
+        where charging_pile_id = #{ChargingPileId}
+    </select>
+    <delete id="deleteChargingPile">
+        delete from sys_charging_pile_info
+        where charging_pile_id = #{ChargingPileId}
+    </delete>
+
 </mapper>

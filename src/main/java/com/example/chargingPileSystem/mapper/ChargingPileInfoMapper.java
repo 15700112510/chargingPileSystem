@@ -14,12 +14,17 @@ public interface ChargingPileInfoMapper {
     //根据imei号查找id
     public String queryId(String ChargingPileId);
     //加入新充电桩
-    public int insertChargingPile(String chargingPileInfo);
+    public int insertChargingPile(ChargingPileInfo chargingPileInfo);
     //更新充电桩信息
     public int updateChargingPile(ChargingPileInfo chargingPileInfo);
     //获取CP信号
     public String queryStage(String id);
 
     //获取充电桩Status  0未插枪  1插枪但是没有任何动作 2插枪有命令下发充电但是未充电（车内预约充电状态/充满自停状态） 3正常充电状态  4离线
-    public int queryStatus(String id);
+    public int queryStatus(String ChargingPileId);
+    //获取充电桩充电状态
+    public String queryCharging(String ChargingPileId);
+    //删除充电桩
+    public int deleteChargingPile(String ChargingPileId);
+
 }
