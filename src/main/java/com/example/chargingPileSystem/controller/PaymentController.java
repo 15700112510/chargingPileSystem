@@ -36,9 +36,19 @@ public class PaymentController {
      * 微信充值回调
      */
     @ResponseBody
-    @RequestMapping("/wxBack")
+    @RequestMapping("/payBack")
     public String payNotify(@RequestBody String xmlData) {
         paymentService.PayCallback(xmlData);
+        return WxPayNotifyResponse.success("处理成功!");
+
+    }
+    /**
+     * 微信退款回调
+     */
+    @ResponseBody
+    @RequestMapping("/refundBack")
+    public String refundNotify(@RequestBody String xmlData) {
+        paymentService.redRefundNotify(xmlData);
         return WxPayNotifyResponse.success("处理成功!");
 
     }

@@ -1,25 +1,11 @@
 package com.example.chargingPileSystem;
 
-import com.alibaba.fastjson2.JSON;
-import com.example.chargingPileSystem.constant.JwtConstant;
 import com.example.chargingPileSystem.domain.PaymentOrder;
 import com.example.chargingPileSystem.mapper.PaymentMapper;
-import com.example.chargingPileSystem.redis.RedisService;
-import com.example.chargingPileSystem.util.JwtUtil;
-import com.example.chargingPileSystem.util.RedisUtil;
-import com.example.chargingPileSystem.util.RSAUtils;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
-import java.lang.reflect.Field;
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.util.HashMap;
-import java.util.Map;
 
 @SpringBootTest
 class ChargingPileSystemApplicationTests {
@@ -29,7 +15,7 @@ class ChargingPileSystemApplicationTests {
     void contextLoads() {
 //        int paymentOrder = paymentMapper.selectByUserOpenid("o9ji76wiK9Uy0HLaBZ7EGgmZGAm8","20240424193651");
 
-        PaymentOrder paymentOrder = paymentMapper.selectByOrderNo("o9ji76wiK9Uy0HLaBZ7EGgmZGAm8","20240424193651");
+        PaymentOrder paymentOrder = paymentMapper.selectByOrderNo("20240424193651");
         System.out.println(paymentOrder);
     }
 

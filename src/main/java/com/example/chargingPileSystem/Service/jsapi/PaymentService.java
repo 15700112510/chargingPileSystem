@@ -24,10 +24,10 @@ public interface PaymentService {
     /**
      *  退款
      */
-    public String redRefundPay(PaymentOrder paymentOrder,int refundAmount) throws WxPayException;
+    public void redRefundPay(PaymentOrder paymentOrder,int refundAmount) throws WxPayException;
 
     /**
      * 退款回调
      */
-    public String redRefundNotify(String xmlData);
+    public void redRefundNotify(String xmlData);
 }

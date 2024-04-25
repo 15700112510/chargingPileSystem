@@ -4,10 +4,9 @@ import cn.hutool.core.date.DateUtil;
 import com.example.chargingPileSystem.Service.jsapi.PaymentService;
 import com.example.chargingPileSystem.constant.PaymentConstant;
 import com.example.chargingPileSystem.domain.PaymentOrder;
-import com.example.chargingPileSystem.domain.StockUserCharge;
 import com.example.chargingPileSystem.mapper.PaymentMapper;
-import com.github.binarywang.wxpay.bean.notify.WxPayNotifyResponse;
 import com.github.binarywang.wxpay.bean.notify.WxPayOrderNotifyV3Result;
+import com.github.binarywang.wxpay.bean.notify.WxPayRefundNotifyV3Result;
 import com.github.binarywang.wxpay.bean.request.WxPayRefundV3Request;
 import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderV3Request;
 import com.github.binarywang.wxpay.bean.result.WxPayRefundV3Result;
@@ -61,12 +60,14 @@ public class PaymentServiceImpl implements PaymentService {
         preAmount.setCurrency("CNY");
         orderRequest.setDescription("充电付款");
         orderRequest.setOutTradeNo(outTradeNo);
+        orderRequest.setNotifyUrl(PaymentConstant.PAY_CALLBACK_URL);
         Date nowDate = new Date();
         Date dateAfter = new Date(nowDate.getTime() + 300000);
         String format = DateUtil.format(dateAfter, "yyyy-MM-dd'T'HH:mm:ssXXX");
         orderRequest.setTimeExpire(format);
         orderRequest.setAmount(preAmount);
         orderRequest.setPayer(payer);
+
 
         //创建预订单
         WxPayUnifiedOrderV3Result.JsapiResult wxPayMpOrderResult;
@@ -104,7 +105,7 @@ public class PaymentServiceImpl implements PaymentService {
         String transactionId = parsedResult.getTransactionId();
 
         //判断是否预订单是否存在
-        PaymentOrder paymentOrder = paymentMapper.selectByOrderNo(userOpenid,outTradeNo);
+        PaymentOrder paymentOrder = paymentMapper.selectByOrderNo(outTradeNo);
         if (paymentOrder == null){
             log.info("支付回调订单不存在");
             return;
@@ -114,19 +115,39 @@ public class PaymentServiceImpl implements PaymentService {
             return;
         }
 
+        //创建充电记录ID
         String chargingRecordId = outTradeNo;
 
+        paymentOrder.setTransactionId(transactionId);
+        paymentOrder.setChargingRecordId(chargingRecordId);
+        paymentOrder.setStatus(PaymentConstant.PAY_SUCCESS);
         //更新订单支付成功状态
-        paymentMapper.updateOrderStatus(outTradeNo, transactionId, chargingRecordId, PaymentConstant.PAY_SUCCESS);
+        paymentMapper.updatePay(paymentOrder);
+        try {
+            System.out.println("开始退款");
+            Thread.sleep(3000);
+            redRefundPay(paymentMapper.selectByOrderNo(outTradeNo),paymentOrder.getAmount());
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (WxPayException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void redRefundPay(PaymentOrder paymentOrder,int refundAmount) throws WxPayException {
+        if (paymentOrder == null){
+            throw new RuntimeException("支付订单不存在");
+        } else if (paymentOrder.getStatus() == PaymentConstant.PAY_REFUND_SUCCESS) {
+            System.out.println("退款订单已退款");
+            return;
+        }
         WxPayService wxPayService = getWxPayService(wxPayConfig);
         //原订单支付金额
         int amount = paymentOrder.getAmount();
+        String outRefundNo = "return_"+paymentOrder.getOutTradeNo();
         //微信支付-申请退款请求参数
-        WxPayRefundV3Request request = new WxPayRefundV3Request();
+        WxPayRefundV3Request orderRequest = new WxPayRefundV3Request();
         WxPayRefundV3Request.Amount am = new WxPayRefundV3Request.Amount();
         //原订单金额
         am.setTotal(amount);
@@ -134,32 +155,71 @@ public class PaymentServiceImpl implements PaymentService {
         //退款金额 注意：退款金额，单位为分，只能为整数，不能超过原订单支付金额。
         am.setRefund(refundAmount);
         //金额信息
-        request.setAmount(am);
+        orderRequest.setAmount(am);
         //transaction_id:微信支付订单号
-        request.setTransactionId(paymentOrder.getTransactionId());
+        orderRequest.setTransactionId(paymentOrder.getTransactionId());
         //商户订单号
-        request.setOutRefundNo("return_"+paymentOrder.getOutTradeNo());
-//        request.setNotifyUrl(WxConfig.refund_notify_url);
+        orderRequest.setOutRefundNo(outRefundNo);
+        paymentOrder.setOutRefundNo(outRefundNo);
+        orderRequest.setNotifyUrl(PaymentConstant.PAY_REFUND_CALLBACK_URL);
 
         //调用微信V3退款API
-        WxPayRefundV3Result result = wxPayService.refundV3(request);
+        WxPayRefundV3Result result = wxPayService.refundV3(orderRequest);
         String status = result.getStatus();
         switch (status) {
             case "SUCCESS":
-                paymentMapper.updateOrderStatus(outTradeNo, transactionId, chargingRecordId, PaymentConstant.PAY_SUCCESS);
+                System.out.println("退款成功");
+                paymentOrder.setStatus(PaymentConstant.PAY_SUCCESS);
+                //更新订单支付成功状态
+                paymentMapper.updatePay(paymentOrder);
                 break;
             case "CLOSED":
-                paymentMapper.updateOrderStatus(outTradeNo, transactionId, chargingRecordId, PaymentConstant.PAY_SUCCESS);
+                System.out.println("退款关闭");
+                paymentOrder.setStatus(PaymentConstant.PAY_REFUND_FAIL);
+                //更新订单支付关闭状态
+                paymentMapper.updatePay(paymentOrder);
                 break;
             case "PROCESSING":
-                paymentMapper.updateOrderStatus(outTradeNo, transactionId, chargingRecordId, PaymentConstant.PAY_SUCCESS);
+                System.out.println("退款处理中");
+                paymentOrder.setStatus(PaymentConstant.PAY_REFUND_PROCESSING);
+                //更新订单支付成功状态
+                paymentMapper.updatePay(paymentOrder);
                 break;
             case "ABNORMAL":
-                paymentMapper.updateOrderStatus(outTradeNo, transactionId, chargingRecordId, PaymentConstant.PAY_SUCCESS);
+                System.out.println("退款异常");
+                paymentOrder.setStatus(PaymentConstant.PAY_REFUND_FAIL);
+                //更新订单支付成功状态
+                paymentMapper.updatePay(paymentOrder);
                 break;
             default:
-                paymentMapper.updateOrderStatus(outTradeNo, transactionId, chargingRecordId, PaymentConstant.PAY_SUCCESS);
+                System.out.println("退款失败");
+                System.out.println("退款异常");
+                paymentOrder.setStatus(PaymentConstant.PAY_REFUND_FAIL);
+                //更新订单支付成功状态
+                paymentMapper.updatePay(paymentOrder);
                 break;
+        }
+    }
+
+    @Override
+    public void redRefundNotify(String xmlData) {
+        try {
+            WxPayService wxPayService = getWxPayService(wxPayConfig);
+            WxPayRefundNotifyV3Result refundResult = wxPayService.parseRefundNotifyV3Result(xmlData,null);
+            String orderId = refundResult.getResult().getOutTradeNo();//拿到订单号获取订单
+            PaymentOrder paymentOrder = paymentMapper.selectByOrderNo(orderId);
+            if (paymentOrder == null){
+                System.out.println("订单不存在");
+                return;
+            } else if (paymentOrder.getStatus() == PaymentConstant.PAY_REFUND_SUCCESS) {
+                System.out.println("订单已退款");
+                return;
+            }
+            paymentOrder.setStatus(PaymentConstant.PAY_REFUND_SUCCESS);
+            paymentMapper.updatePay(paymentOrder);
+            System.out.println("退款成功"+orderId);
+        } catch (WxPayException e) {
+            e.printStackTrace();
         }
     }
 
