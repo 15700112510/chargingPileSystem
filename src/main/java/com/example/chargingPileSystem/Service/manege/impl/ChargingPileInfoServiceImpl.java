@@ -28,7 +28,7 @@ public class ChargingPileInfoServiceImpl implements ChargingPileInfoService {
 
     //2.新增充电桩
     @Override
-    public R<?> insertChargingPile(ChargingPileInfo chargingPileInfo) {
+    public R<?> insertChargingPile(String chargingPileInfo) {
         int num = chargingPileInfoMapper.insertChargingPile(chargingPileInfo);
         return R.ok(num);
     }

@@ -8,7 +8,7 @@ public interface ChargingPileInfoService {
     public R<?> ChargingPileInfo();
 
     //2.新增充电桩
-    public R<?> insertChargingPile(ChargingPileInfo chargingPileInfo);
+    public R<?> insertChargingPile(String chargingPileInfo);
 
     //3.获取当前充电桩状态
     public R<?> getChargingPileStatus(String ChargingPileId);
