@@ -1,8 +1,5 @@
 package com.example.chargingPileSystem.configuration;
 
-import com.example.chargingPileSystem.mqtt.MqttProperties;
-import com.example.chargingPileSystem.mqtt.MsgProcessor;
-import com.example.chargingPileSystem.mqtt.MsgProcessorImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -12,7 +9,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 
 @Slf4j
 @Configuration(proxyBeanMethods = false) //Spring不要为该类创建代理实例，而是直接使用原始实例
@@ -37,12 +33,12 @@ public class MqttConfiguration implements InitializingBean {
         return mqttClient;
     }
 
-    @Bean
-    //当Spring创建当前Bean时，它会检查名为mqttClient的Bean是否已经创建。如果已经创建，则将mqttClient注入到当前Bean中；否则，当前Bean的创建将会被延迟到mqttClient创建之后。
-    @DependsOn("mqttClient")
-    public MsgProcessor messageProcessor() {
-        return new MsgProcessorImpl();
-    }
+//    @Bean
+//    //当Spring创建当前Bean时，它会检查名为mqttClient的Bean是否已经创建。如果已经创建，则将mqttClient注入到当前Bean中；否则，当前Bean的创建将会被延迟到mqttClient创建之后。
+////    @DependsOn("mqttClient")
+//    public MsgProcessor msgProcessor() {
+//        return new MsgProcessorImpl();
+//    }
 
     @Override
     public void afterPropertiesSet() throws Exception {

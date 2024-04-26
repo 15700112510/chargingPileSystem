@@ -2,9 +2,12 @@ package com.example.chargingPileSystem.Service.jsapi.impl;
 
 import cn.hutool.core.date.DateUtil;
 import com.example.chargingPileSystem.Service.jsapi.PaymentService;
+import com.example.chargingPileSystem.commen.R;
 import com.example.chargingPileSystem.constant.PaymentConstant;
 import com.example.chargingPileSystem.domain.PaymentOrder;
+import com.example.chargingPileSystem.enums.ErrorEnum;
 import com.example.chargingPileSystem.mapper.PaymentMapper;
+import com.example.chargingPileSystem.mapper.UserMapper;
 import com.github.binarywang.wxpay.bean.notify.WxPayOrderNotifyV3Result;
 import com.github.binarywang.wxpay.bean.notify.WxPayRefundNotifyV3Result;
 import com.github.binarywang.wxpay.bean.request.WxPayRefundV3Request;
@@ -12,10 +15,8 @@ import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderV3Request;
 import com.github.binarywang.wxpay.bean.result.WxPayRefundV3Result;
 import com.github.binarywang.wxpay.bean.result.WxPayUnifiedOrderV3Result;
 import com.github.binarywang.wxpay.bean.result.enums.TradeTypeEnum;
-import com.github.binarywang.wxpay.config.WxPayConfig;
 import com.github.binarywang.wxpay.exception.WxPayException;
 import com.github.binarywang.wxpay.service.WxPayService;
-import com.github.binarywang.wxpay.service.impl.WxPayServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -31,24 +32,30 @@ public class PaymentServiceImpl implements PaymentService {
     private WxPayService wxPayService;
     @Resource
     private PaymentMapper paymentMapper;
+    @Resource
+    private UserMapper userMapper;
 
     /**
      * 创建预订单
      */
     @Override
     public Object createPreOrder(PaymentOrder paymentOrder) {
-        //        if (charge.getUserOpenid() == null || charge.getUserOpenid().equals("") ){
-//            return R.fail(ErrorEnum.USER_ID_EMPTY_ERROR,"用户openid为空");
-//        }else if (userMapper.queryUserByPhone(charge.getUserOpenid()) == null ){
-//            return R.fail(ErrorEnum.USER_ID_EMPTY_ERROR,"用户openid为不存在");
-//        }
-
+        if (paymentOrder.getUserOpenid() == null || paymentOrder.getUserOpenid().equals("")) {
+            return R.fail(ErrorEnum.USER_ID_EMPTY_ERROR, "用户openid为空");
+        } else if (userMapper.queryUserByUserOpenid(paymentOrder.getUserOpenid()) == null) {
+            return R.fail(ErrorEnum.USER_ID_EMPTY_ERROR, "用户openid为不存在");
+        }
+        if (paymentOrder.getAmount() == null || paymentOrder.getAmount().equals("")
+                || paymentOrder.getAmount().equals("0"))
+            return R.fail(ErrorEnum.AMOUNT_EMPTY_ERROR, "金额为空");
+        if (paymentOrder.getOutTradeNo() == null || paymentOrder.getOutTradeNo().equals(""))
+            return R.fail(ErrorEnum.OUT_TRADE_NO_EMPTY_ERROR, "商户订单号为空");
 
         String outTradeNo = paymentOrder.getOutTradeNo();
         String userOpenid = paymentOrder.getUserOpenid();
         int amount = paymentOrder.getAmount();
         String chargingPileId = paymentOrder.getChargingPileId();
-        if (chargingPileId ==null || chargingPileId.equals("")){
+        if (chargingPileId == null || chargingPileId.equals("")) {
             chargingPileId = "null";
         }
 
@@ -80,12 +87,13 @@ public class PaymentServiceImpl implements PaymentService {
             throw new RuntimeException(e);
         }
         //数据库插入预订单数据
-        paymentMapper.insertPreOrder(outTradeNo, userOpenid, chargingPileId,  amount, PaymentConstant.PAY_PROCESSING);
+        paymentMapper.insertPreOrder(outTradeNo, userOpenid, chargingPileId, amount, PaymentConstant.PAY_PROCESSING);
         return wxPayMpOrderResult;
     }
 
     /**
-     *  支付回调
+     * 支付回调
+     *
      * @param xmlData
      */
     @Override
@@ -108,11 +116,11 @@ public class PaymentServiceImpl implements PaymentService {
 
         //判断是否预订单是否存在
         PaymentOrder paymentOrder = paymentMapper.selectByOrderNo(outTradeNo);
-        if (paymentOrder == null){
+        if (paymentOrder == null) {
             log.info("支付回调订单不存在");
             return;
         }
-        if (paymentOrder.getStatus() == 0){
+        if (paymentOrder.getStatus() == 0) {
             log.info("支付回调订单已支付");
             return;
         }
@@ -128,7 +136,7 @@ public class PaymentServiceImpl implements PaymentService {
         try {
             System.out.println("开始退款");
             Thread.sleep(3000);
-            redRefundPay(paymentMapper.selectByOrderNo(outTradeNo),paymentOrder.getAmount());
+            redRefundPay(paymentMapper.selectByOrderNo(outTradeNo), paymentOrder.getAmount());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (WxPayException e) {
@@ -137,14 +145,15 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     /**
-     *  退款
+     * 退款
+     *
      * @param paymentOrder
      * @param refundAmount
      * @throws WxPayException
      */
     @Override
-    public void redRefundPay(PaymentOrder paymentOrder,int refundAmount) throws WxPayException {
-        if (paymentOrder == null){
+    public void redRefundPay(PaymentOrder paymentOrder, int refundAmount) throws WxPayException {
+        if (paymentOrder == null) {
             throw new RuntimeException("支付订单不存在");
         } else if (paymentOrder.getStatus() == PaymentConstant.PAY_REFUND_SUCCESS) {
             System.out.println("退款订单已退款");
@@ -152,7 +161,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
         //原订单支付金额
         int amount = paymentOrder.getAmount();
-        String outRefundNo = "return_"+paymentOrder.getOutTradeNo();
+        String outRefundNo = "return_" + paymentOrder.getOutTradeNo();
         //微信支付-申请退款请求参数
         WxPayRefundV3Request orderRequest = new WxPayRefundV3Request();
         WxPayRefundV3Request.Amount am = new WxPayRefundV3Request.Amount();
@@ -200,7 +209,6 @@ public class PaymentServiceImpl implements PaymentService {
                 break;
             default:
                 System.out.println("退款失败");
-                System.out.println("退款异常");
                 paymentOrder.setStatus(PaymentConstant.PAY_REFUND_FAIL);
                 //更新订单支付成功状态
                 paymentMapper.updatePay(paymentOrder);
@@ -209,16 +217,17 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     /**
-     *  退款回调
+     * 退款回调
+     *
      * @param xmlData
      */
     @Override
     public void redRefundNotify(String xmlData) {
         try {
-            WxPayRefundNotifyV3Result refundResult = wxPayService.parseRefundNotifyV3Result(xmlData,null);
+            WxPayRefundNotifyV3Result refundResult = wxPayService.parseRefundNotifyV3Result(xmlData, null);
             String orderId = refundResult.getResult().getOutTradeNo();//拿到订单号获取订单
             PaymentOrder paymentOrder = paymentMapper.selectByOrderNo(orderId);
-            if (paymentOrder == null){
+            if (paymentOrder == null) {
                 System.out.println("订单不存在");
                 return;
             } else if (paymentOrder.getStatus() == PaymentConstant.PAY_REFUND_SUCCESS) {
@@ -227,7 +236,7 @@ public class PaymentServiceImpl implements PaymentService {
             }
             paymentOrder.setStatus(PaymentConstant.PAY_REFUND_SUCCESS);
             paymentMapper.updatePay(paymentOrder);
-            System.out.println("退款成功"+orderId);
+            System.out.println("退款成功" + orderId);
         } catch (WxPayException e) {
             e.printStackTrace();
         }

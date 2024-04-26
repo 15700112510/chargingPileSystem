@@ -4,9 +4,8 @@ import com.example.chargingPileSystem.util.IOUtil;
 import com.github.binarywang.wxpay.config.WxPayConfig;
 import com.github.binarywang.wxpay.service.WxPayService;
 import com.github.binarywang.wxpay.service.impl.WxPayServiceImpl;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -16,14 +15,21 @@ import java.io.InputStream;
 
 
 @Configuration
+@EnableConfigurationProperties(WxPayProperties.class)
 public class WxPayConfiguration {
+    private  final WxPayProperties wxPayProperties;
+
+    public WxPayConfiguration(WxPayProperties wxPayProperties) {
+        this.wxPayProperties = wxPayProperties;
+    }
+
     @Bean
     public WxPayConfig wxPayConfig(){
         byte[] inApiClientCertBytes = null;
         byte[] inApiClientKeyBytes = null;
 
-        InputStream inApiClientCert = this.getClass().getResourceAsStream("/" + "apiclient_cert.pem");
-        InputStream inApiClientKey = this.getClass().getResourceAsStream("/" + "apiclient_key.pem");
+        InputStream inApiClientCert = this.getClass().getResourceAsStream("/" + wxPayProperties.getCertPath());
+        InputStream inApiClientKey = this.getClass().getResourceAsStream("/" + wxPayProperties.getKeyPath());
         // 读取证书
         if (inApiClientCert != null) {
             IOUtil converterCert = new IOUtil();
@@ -45,16 +51,16 @@ public class WxPayConfiguration {
             System.err.println("File not found: " + "apiclient_key.pem");
         }
         WxPayConfig payConfig = new WxPayConfig();
-        payConfig.setAppId("wx04a5a6484e9716c2");
-        payConfig.setMchId("1672263753");
-        payConfig.setApiV3Key("Zjr12345678912345678912345678900");
-        payConfig.setKeyPath("apiclient_cert.p12");//p12
+        payConfig.setAppId(wxPayProperties.getAppId());
+        payConfig.setMchId(wxPayProperties.getMchId());
+        payConfig.setApiV3Key(wxPayProperties.getApiV3Key());
+        payConfig.setKeyPath(wxPayProperties.getP12Path());//p12
+        payConfig.setUseSandboxEnv(wxPayProperties.isUseSandboxEnv());
         payConfig.setPrivateCertContent(inApiClientCertBytes);//私钥
         payConfig.setPrivateKeyContent(inApiClientKeyBytes);//证书
-//        payConfig.setNotifyUrl("https://zeddy.online/charging/app/WxPay/wxBack");
-        payConfig.setUseSandboxEnv(false);
         return  payConfig;
     }
+
     @Bean
     @ConditionalOnBean(WxPayConfig.class)
     @Scope("prototype")
@@ -63,5 +69,4 @@ public class WxPayConfiguration {
         payService.setConfig(wxPayConfig());
         return payService;
     }
-
 }

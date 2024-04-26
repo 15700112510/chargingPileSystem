@@ -21,7 +21,10 @@
         where sys_user_info.user_name = #{userName}
     </select>
 
-    <select id="queryUserOpenId" resultType="java.lang.String">
+    <select id="queryUserOpenid" resultType="java.lang.String">
         select user_open_id from sys_user_info where charging_pile_id = #{chargingPileId}
+    </select>
+    <select id="queryUserByUserOpenid" resultType="com.example.chargingPileSystem.domain.UserInfo">
+        select * from sys_user_info where user_openid = #{userOpenid}
     </select>
 </mapper>
