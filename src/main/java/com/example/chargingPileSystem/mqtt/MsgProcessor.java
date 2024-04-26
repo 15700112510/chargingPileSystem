@@ -10,6 +10,7 @@ import lombok.Data;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.sql.Timestamp;
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 
 @Data
+@Component
 public class MsgProcessor implements InitializingBean {
     private String topic;
     private MqttMessage mqttMessage;

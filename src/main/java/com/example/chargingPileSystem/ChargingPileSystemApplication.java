@@ -9,7 +9,6 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 @SpringBootApplication
 @ConfigurationPropertiesScan
 public class ChargingPileSystemApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(ChargingPileSystemApplication.class, args);
     }

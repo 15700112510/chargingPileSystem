@@ -6,6 +6,11 @@ import javax.annotation.Resource;
 
 @Slf4j
 public class mqttCallBack implements MqttCallback {
+    private MsgProcessor processor;
+
+    public mqttCallBack(MsgProcessor processor) {
+        this.processor = processor;
+    }
 
 
     @Override
@@ -15,7 +20,6 @@ public class mqttCallBack implements MqttCallback {
 
     @Override
     public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
-        MsgProcessor processor = new MsgProcessor();
         processor.setTopic(topic);
         processor.setMqttMessage(mqttMessage);
         processor.process();

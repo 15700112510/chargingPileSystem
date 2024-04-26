@@ -8,10 +8,13 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 @Slf4j
 @Component
 public class MyMqttClient {
+    @Resource
+    MsgProcessor processor;
     private final MqttProperties mqttProperties;
     private final MqttClient mqttClient;
 
@@ -26,7 +29,7 @@ public class MyMqttClient {
         // 连接服务器
         connect(mqttClient, mqttProperties);
         mqttClient.subscribe(mqttProperties.getTopic());
-        mqttClient.setCallback(new mqttCallBack());
+        mqttClient.setCallback(new mqttCallBack(processor));
     }
 
     /**
