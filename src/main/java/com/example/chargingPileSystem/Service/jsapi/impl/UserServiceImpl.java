@@ -1,6 +1,7 @@
 package com.example.chargingPileSystem.Service.jsapi.impl;
 
 import com.alibaba.druid.util.StringUtils;
+import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.example.chargingPileSystem.Service.jsapi.UserService;
 import com.example.chargingPileSystem.commen.R;
@@ -9,8 +10,10 @@ import com.example.chargingPileSystem.mapper.UserMapper;
 import com.example.chargingPileSystem.redis.RedisService;
 import com.example.chargingPileSystem.util.*;
 import com.example.chargingPileSystem.wechat.WechatConfigProperties;
+import io.lettuce.core.ScriptOutputType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.entity.ContentType;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -131,7 +134,7 @@ public class UserServiceImpl implements UserService {
 //        }
 //    }
 
-    public R<?> getPhoneNumber(String code) {
+    public R<?> getPhoneNumber(String code) throws Exception {
         System.out.println("调用getPhoneNumber（）");
         String access_token = getAccessToken();
         if (access_token == null) {
@@ -143,9 +146,9 @@ public class UserServiceImpl implements UserService {
         String phoneUrl = wechatConfigProperties.getPhoneUrl(access_token);
         Map<String, Object> map = new HashMap<>();
         map.put("code", code);
-
-        JSONObject jsonObject = sendPostRestTemplate(phoneUrl, map, JSONObject.class);
-        System.out.println(jsonObject);
+//        JSONObject jsonObject = sendPostRestTemplate(phoneUrl, map, JSONObject.class);
+        String result = HttpClientSslUtils.doPost(phoneUrl,map.get("code").toString());
+        JSONObject jsonObject = JSON.parseObject(result);
         if (jsonObject.containsKey("errcode")) {
             /*如果异常码是0 说明正常*/
             if (!Objects.equals(String.valueOf(jsonObject.get("errcode")), "0")) {
