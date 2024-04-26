@@ -2,16 +2,20 @@ package com.example.chargingPileSystem.configuration;
 
 import com.example.chargingPileSystem.util.IOUtil;
 import com.github.binarywang.wxpay.config.WxPayConfig;
+import com.github.binarywang.wxpay.service.WxPayService;
+import com.github.binarywang.wxpay.service.impl.WxPayServiceImpl;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 
 @Configuration
-@AllArgsConstructor
 public class WxPayConfiguration {
     @Bean
     public WxPayConfig wxPayConfig(){
@@ -40,10 +44,6 @@ public class WxPayConfiguration {
         } else {
             System.err.println("File not found: " + "apiclient_key.pem");
         }
-        String strCert = new String(inApiClientCertBytes);
-        String strKey = new String(inApiClientKeyBytes);
-        System.out.println("inApiClientCertBytes:" + strCert);
-        System.out.println("inApiClientKeyBytes:" + strKey);
         WxPayConfig payConfig = new WxPayConfig();
         payConfig.setAppId("wx04a5a6484e9716c2");
         payConfig.setMchId("1672263753");
@@ -55,4 +55,13 @@ public class WxPayConfiguration {
         payConfig.setUseSandboxEnv(false);
         return  payConfig;
     }
+    @Bean
+    @ConditionalOnBean(WxPayConfig.class)
+    @Scope("prototype")
+    public WxPayService wxPayService() {
+        WxPayService payService = new WxPayServiceImpl();
+        payService.setConfig(wxPayConfig());
+        return payService;
+    }
+
 }

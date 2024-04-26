@@ -26,10 +26,12 @@ import java.util.Date;
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
+
     @Resource
-    private WxPayConfig wxPayConfig;
+    private WxPayService wxPayService;
     @Resource
     private PaymentMapper paymentMapper;
+
     /**
      * 创建预订单
      */
@@ -41,7 +43,6 @@ public class PaymentServiceImpl implements PaymentService {
 //            return R.fail(ErrorEnum.USER_ID_EMPTY_ERROR,"用户openid为不存在");
 //        }
 
-        WxPayService wxPayService = getWxPayService(wxPayConfig);
 
         String outTradeNo = paymentOrder.getOutTradeNo();
         String userOpenid = paymentOrder.getUserOpenid();
@@ -83,11 +84,12 @@ public class PaymentServiceImpl implements PaymentService {
         return wxPayMpOrderResult;
     }
 
-
-
+    /**
+     *  支付回调
+     * @param xmlData
+     */
     @Override
     public void PayCallback(String xmlData) {
-        WxPayService wxPayService = getWxPayService(wxPayConfig);
 
         // 解析支付回调
         WxPayOrderNotifyV3Result result;
@@ -134,6 +136,12 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
+    /**
+     *  退款
+     * @param paymentOrder
+     * @param refundAmount
+     * @throws WxPayException
+     */
     @Override
     public void redRefundPay(PaymentOrder paymentOrder,int refundAmount) throws WxPayException {
         if (paymentOrder == null){
@@ -142,7 +150,6 @@ public class PaymentServiceImpl implements PaymentService {
             System.out.println("退款订单已退款");
             return;
         }
-        WxPayService wxPayService = getWxPayService(wxPayConfig);
         //原订单支付金额
         int amount = paymentOrder.getAmount();
         String outRefundNo = "return_"+paymentOrder.getOutTradeNo();
@@ -201,10 +208,13 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
+    /**
+     *  退款回调
+     * @param xmlData
+     */
     @Override
     public void redRefundNotify(String xmlData) {
         try {
-            WxPayService wxPayService = getWxPayService(wxPayConfig);
             WxPayRefundNotifyV3Result refundResult = wxPayService.parseRefundNotifyV3Result(xmlData,null);
             String orderId = refundResult.getResult().getOutTradeNo();//拿到订单号获取订单
             PaymentOrder paymentOrder = paymentMapper.selectByOrderNo(orderId);
@@ -223,13 +233,4 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
-
-    /**
-     * 创建微信支付服务对象
-     */
-    public WxPayService getWxPayService(WxPayConfig wxPayConfig) {
-        WxPayService payService = new WxPayServiceImpl();
-        payService.setConfig(wxPayConfig);
-        return payService;
-    }
 }
