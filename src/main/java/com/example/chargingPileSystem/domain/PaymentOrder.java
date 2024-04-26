@@ -28,4 +28,8 @@ public class PaymentOrder {
     private Timestamp createTime;
     //状态
     private Integer status;
+    //退款金额
+    private Integer refundAmount;
+    //退款单号
+    private String outRefundNo;
 }

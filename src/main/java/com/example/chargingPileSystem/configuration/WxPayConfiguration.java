@@ -51,7 +51,7 @@ public class WxPayConfiguration {
         payConfig.setKeyPath("apiclient_cert.p12");//p12
         payConfig.setPrivateCertContent(inApiClientCertBytes);//私钥
         payConfig.setPrivateKeyContent(inApiClientKeyBytes);//证书
-        payConfig.setNotifyUrl("https://zeddy.online/charging/app/WxPay/wxBack");
+//        payConfig.setNotifyUrl("https://zeddy.online/charging/app/WxPay/wxBack");
         payConfig.setUseSandboxEnv(false);
         return  payConfig;
     }
