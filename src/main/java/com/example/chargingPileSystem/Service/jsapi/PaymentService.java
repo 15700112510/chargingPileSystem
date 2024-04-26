@@ -29,5 +29,5 @@ public interface PaymentService {
     /**
      * 退款回调
      */
-//    public String redRefundNotify(String xmlData);
+    public void redRefundNotify(String xmlData);
 }

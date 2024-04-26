@@ -23,7 +23,7 @@ public class UserController {
     private RedisUtil redisUtil;
 
     @PostMapping("/login")
-    public R<?> login(@RequestBody LoginForm loginForm ) throws Exception {
+    public R<?> login(@RequestBody LoginForm loginForm) throws Exception {
         return userService.login(loginForm);
     }
 

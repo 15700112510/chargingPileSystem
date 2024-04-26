@@ -10,12 +10,42 @@
     <update id="updateOrderStatus">
         UPDATE sys_payment_record SET  transaction_id = #{transactionId}, charging_record_id = #{chargingRecordId}, status = #{status} WHERE out_trade_no = #{outTradeNo}
     </update>
-    <update id="updatepay">
-        UPDATE sys_payment_record SET  status = #{status} WHERE out_trade_no = #{outTradeNo}
+    <update id="updatePay" parameterType="com.example.chargingPileSystem.domain.PaymentOrder">
+            UPDATE sys_payment_record
+            <set>
+                <if test="outTradeNo != null">
+                    out_trade_no = #{outTradeNo},
+                </if>
+                <if test="userOpenid != null">
+                    user_openid = #{userOpenid},
+                </if>
+                <if test="amount != null">
+                    amount = #{amount},
+                </if>
+                <if test="chargingPileId != null">
+                    charging_pile_id = #{chargingPileId},
+                </if>
+                <if test="transactionId != null">
+                    transaction_id = #{transactionId},
+                </if>
+                <if test="chargingRecordId != null">
+                    charging_record_id = #{chargingRecordId},
+                </if>
+                <if test="status != null">
+                    status = #{status},
+                </if>
+                <if test="refundAmount != null">
+                    refund_amount = #{refundAmount},
+                </if>
+                <if test="outRefundNo != null">
+                    out_refund_no = #{outRefundNo},
+                </if>
+            </set>
+            WHERE out_trade_no = #{outTradeNo}
     </update>
 
     <select id="selectByOrderNo" resultType="com.example.chargingPileSystem.domain.PaymentOrder">
-        SELECT * FROM sys_payment_record WHERE out_trade_no = #{outTradeNo} and user_openid = #{userOpenid}
+        SELECT * FROM sys_payment_record WHERE out_trade_no = #{outTradeNo}
     </select>
 
 </mapper>
