@@ -33,13 +33,6 @@ public class MqttConfiguration implements InitializingBean {
         return mqttClient;
     }
 
-//    @Bean
-//    //当Spring创建当前Bean时，它会检查名为mqttClient的Bean是否已经创建。如果已经创建，则将mqttClient注入到当前Bean中；否则，当前Bean的创建将会被延迟到mqttClient创建之后。
-////    @DependsOn("mqttClient")
-//    public MsgProcessor msgProcessor() {
-//        return new MsgProcessorImpl();
-//    }
-
     @Override
     public void afterPropertiesSet() throws Exception {
         log.debug("Mqtt initialization task executing");

@@ -57,6 +57,7 @@ public class ChargingServiceImpl implements ChargingService {
         String content = "POWER_ENABLE";
         String topic = "CDZ/" + chargingPileId + "/Config";
         MqttMessage msg = new MqttMessage(content.getBytes());
+        mqttClient.publish(topic, msg);
         if (chargingPileInfoMapper.queryStage(chargingPileId).equals("6")) {
             mqttClient.publish(topic, msg);
             return R.ok("充电桩开启成功");
