@@ -18,4 +18,12 @@ public interface ChargingPileInfoService {
 
     //4.删除机器
     public R<?> deleteChargingPile(String ChargingPileId);
+
+    //获取充电单价
+    public R<?> getChargingPrice(String ChargingPileId);
+
+    //修改充电单价
+    public R<?> updateChargingPrice(String ChargingPileId, Double ChargingPrice);
+
+
 }

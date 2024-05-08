@@ -54,5 +54,14 @@
         delete from sys_charging_pile_info
         where charging_pile_id = #{ChargingPileId}
     </delete>
-
+    <select id="getPrice" resultType="java.lang.Double">
+        select price
+        from sys_charging_pile_info
+        where charging_pile_id = #{ChargingPileId}
+    </select>
+    <update id="updatePrice">
+        update sys_charging_pile_info
+        set price = #{ChargingPrice}
+        where charging_pile_id = #{ChargingPileId}
+    </update>
 </mapper>

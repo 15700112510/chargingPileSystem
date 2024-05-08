@@ -53,5 +53,14 @@ public class ChargingPileInfoServiceImpl implements ChargingPileInfoService {
         return R.ok("删除数据"+i+"；删除总数据"+a);
     }
 
+    //获取充电单价
+    @Override
+    public R<?> getChargingPrice(String ChargingPileId) {
+        return R.ok(chargingPileInfoMapper.getPrice(ChargingPileId));
+    }
+    //修改充电单价
+    public R<?> updateChargingPrice(String ChargingPileId,Double ChargingPrice) {
+        return R.ok(chargingPileInfoMapper.updatePrice(ChargingPileId, ChargingPrice));
+    }
 
 }
