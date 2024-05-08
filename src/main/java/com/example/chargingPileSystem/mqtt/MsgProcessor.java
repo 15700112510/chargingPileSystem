@@ -174,7 +174,6 @@ public class MsgProcessor implements InitializingBean {
                 contrastChargingPileRecord(imei, chargingPileRecord, gateStatus, chargingUpTime);
             }
 
-            if()
 
         }
 
