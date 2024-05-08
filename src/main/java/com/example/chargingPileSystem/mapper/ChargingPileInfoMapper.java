@@ -26,5 +26,9 @@ public interface ChargingPileInfoMapper {
     public String queryCharging(String ChargingPileId);
     //删除充电桩
     public int deleteChargingPile(String ChargingPileId);
+    //获取充电单价
+    public Double getPrice(String ChargingPileId);
+    //修改充电单价
+    public int updatePrice(String ChargingPileId,Double ChargingPrice);
 
 }
