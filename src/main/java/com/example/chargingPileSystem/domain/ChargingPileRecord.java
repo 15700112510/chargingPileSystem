@@ -28,4 +28,6 @@ public class ChargingPileRecord {
     private int chargingForm;
     //闸门状态
     private int gateStatus;
+    //预计充电电能
+    private String expectEnergy;
 }

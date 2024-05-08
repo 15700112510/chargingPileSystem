@@ -1,11 +1,10 @@
 package com.example.chargingPileSystem.mqtt;
 
+import com.example.chargingPileSystem.configuration.MqttProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -14,17 +13,13 @@ import javax.annotation.Resource;
 @Slf4j
 @Component
 public class MyMqttClient {
+    @Resource
+    MsgProcessor processor;
     private final MqttProperties mqttProperties;
-    private final DefaultListableBeanFactory beanFactoryWrapper;
+    private final MqttClient mqttClient;
 
-    private final MsgProcessor msgProcessor;
-
-    private MqttClient mqttClient;
-
-    public MyMqttClient(MqttProperties mqttProperties, DefaultListableBeanFactory beanFactoryWrapper,MsgProcessor msgProcessor,MqttClient mqttClient) {
+    public MyMqttClient(MqttProperties mqttProperties, MqttClient mqttClient) {
         this.mqttProperties = mqttProperties;
-        this.beanFactoryWrapper = beanFactoryWrapper;
-        this.msgProcessor =  msgProcessor;
         this.mqttClient = mqttClient;
     }
 
@@ -34,7 +29,7 @@ public class MyMqttClient {
         // 连接服务器
         connect(mqttClient, mqttProperties);
         mqttClient.subscribe(mqttProperties.getTopic());
-        mqttClient.setCallback(new mqttCallBack(mqttProperties, mqttClient, msgProcessor));
+        mqttClient.setCallback(new mqttCallBack(processor));
     }
 
     /**

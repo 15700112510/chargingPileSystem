@@ -1,4 +1,4 @@
-package com.example.chargingPileSystem.mqtt;
+package com.example.chargingPileSystem.configuration;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

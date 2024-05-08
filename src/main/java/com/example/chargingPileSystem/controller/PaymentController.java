@@ -40,7 +40,6 @@ public class PaymentController {
     public String payNotify(@RequestBody String xmlData) {
         paymentService.PayCallback(xmlData);
         return WxPayNotifyResponse.success("处理成功!");
-
     }
     /**
      * 微信退款回调

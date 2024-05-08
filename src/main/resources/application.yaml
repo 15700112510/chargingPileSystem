@@ -22,9 +22,9 @@ spring:
 
 mqtt:
   enable: true
-  host: tcp://101.132.244.232:2883
-  username: root
-  password: password
+  host: tcp://211.103.33.70:2883
+  username: server
+  password: public
   timeout: 10
   keepAlive: 60
   topic: CDZ/#
@@ -52,6 +52,17 @@ wechat:
   privateKeyPath: src/main/resources/certificate/apiclient_key.pem
   privateCertPath: src/main/resources/certificate/apiclient_cert.pem
 
+
+wepay:
+  appId: wx04a5a6484e9716c2
+  appSecret: c8386730e4a0d09d5820a8d4b73e3088
+  mchId: 1672263753
+  apiV3Key: Zjr12345678912345678912345678900
+  notifyUrl: https://zeddy.online/charging/app/WxPay/wxBack
+  certPath: apiclient_cert.pem
+  keyPath: apiclient_key.pem
+  useSandboxEnv: false
+  p12Path: apiclient_cert.p12
 
 server:
   port: 8089
