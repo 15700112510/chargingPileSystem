@@ -1,65 +1,69 @@
 package com.example.chargingPileSystem.Service.jsapi.impl;
 
-import cn.hutool.core.date.DateUtil;
 import com.example.chargingPileSystem.Service.jsapi.ChargingService;
+import com.example.chargingPileSystem.Service.jsapi.PileRecordService;
+import com.example.chargingPileSystem.Service.manege.ChargingPileInfoService;
 import com.example.chargingPileSystem.commen.R;
-import com.example.chargingPileSystem.domain.StockUserCharge;
-import com.example.chargingPileSystem.domain.UserInfo;
+import com.example.chargingPileSystem.constant.ChargingPileRecordConstant;
+import com.example.chargingPileSystem.domain.ChargingPileRecord;
+import com.example.chargingPileSystem.domain.PaymentOrder;
 import com.example.chargingPileSystem.enums.ErrorEnum;
 import com.example.chargingPileSystem.form.StateForm;
-import com.example.chargingPileSystem.mapper.ChargingMapper;
 import com.example.chargingPileSystem.mapper.ChargingPileInfoMapper;
 import com.example.chargingPileSystem.mapper.ChargingPileRecordMapper;
-import com.example.chargingPileSystem.mapper.UserMapper;
-import com.example.chargingPileSystem.util.wechatUtil;
-import com.github.binarywang.wxpay.bean.order.WxPayMpOrderResult;
-import com.github.binarywang.wxpay.bean.request.BaseWxPayRequest;
-import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderRequest;
-import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderV3Request;
-import com.github.binarywang.wxpay.bean.result.WxPayUnifiedOrderV3Result;
-import com.github.binarywang.wxpay.bean.result.enums.TradeTypeEnum;
-import com.github.binarywang.wxpay.config.WxPayConfig;
-import com.github.binarywang.wxpay.constant.WxPayConstants;
-import com.github.binarywang.wxpay.exception.WxPayException;
-import com.github.binarywang.wxpay.service.WxPayService;
-import com.github.binarywang.wxpay.service.impl.WxPayServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Date;
-import java.util.Map;
-import java.util.Random;
+import java.sql.Timestamp;
+import static com.example.chargingPileSystem.constant.ChargingPileRecordConstant.ORDER_UNACCOMPLISHED;
 
 @Service
 @Slf4j
 public class ChargingServiceImpl implements ChargingService {
     @Resource
-    private ChargingMapper chargingMapper;
-    @Resource
     private ChargingPileInfoMapper chargingPileInfoMapper;
     @Resource
-    private ChargingPileRecordMapper chargingPileRecordMapper;
+    private ChargingPileRecordMapper  chargingPileRecordMapper;
     @Resource
     private MqttClient mqttClient;
+    @Resource
+    private PileRecordService  pileRecordService;
+    @Resource
+    private ChargingPileInfoService  chargingPileInfoService;
     @Override
-    public R<?> openPile(String chargingPileId) throws MqttException {
+    public R<?> openPile(PaymentOrder paymentOrder) throws MqttException {
         String content = "POWER_ENABLE";
-        String topic = "CDZ/" + chargingPileId + "/Config";
+        String topic = "CDZ/" + paymentOrder.getChargingPileId() + "/Config";
         MqttMessage msg = new MqttMessage(content.getBytes());
         mqttClient.publish(topic, msg);
-        if (chargingPileInfoMapper.queryStage(chargingPileId).equals("6")) {
+        //如果CP信号握手成功，则准备充电开启充电桩
+        if (chargingPileRecordMapper.queryStage(paymentOrder.getChargingPileId()) == 6) {
             mqttClient.publish(topic, msg);
+            ChargingPileRecord chargingPileRecord = new ChargingPileRecord();
+
+            //设置chargingPileId
+            chargingPileRecord.setChargingPileId(paymentOrder.getChargingPileId());
+            //设置chargingRecordId
+            chargingPileRecord.setChargingRecordId(paymentOrder.getChargingRecordId());
+            //设置预计充电量
+            int Amount = paymentOrder.getAmount();
+            int price = chargingPileInfoService.getChargingPrice(paymentOrder.getChargingPileId());
+            String expectEnergy = String.valueOf(Amount / price);
+            chargingPileRecord.setExpectEnergy(expectEnergy);
+            //设置充电订单创建时间
+            long currentTimeMillis  = System.currentTimeMillis();
+            Timestamp creatTime = new Timestamp(currentTimeMillis);
+            chargingPileRecord.setCreatTime(creatTime);
+            //设置充电人员
+            chargingPileRecord.setUserOpenid(paymentOrder.getUserOpenid());
+            //设置订单状态（未完成）
+            chargingPileRecord.setOrderStatus(ChargingPileRecordConstant.ORDER_UNACCOMPLISHED);
+            //设置充电开始时间？？？
+
+            pileRecordService.insertChargingRecord(chargingPileRecord);
             return R.ok("充电桩开启成功");
         }
         return R.fail(ErrorEnum.CHARGING_PILE_OPENING_ERROR);
@@ -70,7 +74,7 @@ public class ChargingServiceImpl implements ChargingService {
         String content = "POWER_DISABLE";
         String topic = "CDZ/" + chargingPileId + "/Config";
         MqttMessage msg = new MqttMessage(content.getBytes());
-        if (chargingPileRecordMapper.queryLastRecord(chargingPileId).getDownTime() == null) {
+        if (pileRecordService.queryLastChargingRecord(chargingPileId).getDownTime() == null) {
             mqttClient.publish(topic, msg);
             return R.ok("充电桩关闭成功");
         }
@@ -81,7 +85,7 @@ public class ChargingServiceImpl implements ChargingService {
     public R<?> appointmentTime(String chargingPileId, String appointmentTime) throws MqttException {
         String topic = "CDZ/" + chargingPileId + "/Config";
         MqttMessage msg = new MqttMessage(appointmentTime.getBytes());
-        if (chargingPileRecordMapper.queryLastRecord(chargingPileId).getDownTime() == null) {
+        if (pileRecordService.queryLastChargingRecord(chargingPileId).getDownTime() == null) {
             mqttClient.publish(topic, msg);
             return R.ok("充电桩预约成功");
         }
@@ -91,11 +95,11 @@ public class ChargingServiceImpl implements ChargingService {
     @Override
     public R<?> state(String chargingPileId) {
 
-        int stage = chargingMapper.queryStage(chargingPileId);
+        int stage = chargingPileRecordMapper.queryStage(chargingPileId);
         if (!(stage == 12)) {
             return R.fail(ErrorEnum.CHARGING_PLIE_ID_NO_CONNECT_ERROR,"充电桩未连接");
         }
-        StateForm stateForm = chargingMapper.queryChargingPileState(chargingPileId);
+        StateForm stateForm = chargingPileInfoMapper.queryChargingPileState(chargingPileId);
         System.out.println(stateForm);
         return R.ok(stateForm);
     }
@@ -103,7 +107,20 @@ public class ChargingServiceImpl implements ChargingService {
     //获取充电桩Status  0未插枪  1插枪但是没有任何动作 2插枪有命令下发充电但是未充电（车内预约充电状态/充满自停状态） 3正常充电状态  4离线
     @Override
     public R<?> status(String userOpenId) {
-        int status = chargingPileInfoMapper.queryStatus(userOpenId);
+        int status = chargingPileInfoService.getChargingPileStatus(userOpenId).getCode();
         return  R.ok(status);
     }
+
+    //根据充电桩编码获取CP信号
+    @Override
+    public R<?> getStage(String ChargingPileId) {
+        return  R.ok(chargingPileRecordMapper.queryStage(ChargingPileId));
+    }
+
+    //获取订单状态
+    @Override
+    public int getOrderStatus(String ChargingPileId) {
+        return chargingPileRecordMapper.queryOrderStatus(ChargingPileId);
+    }
+
 }

@@ -26,42 +26,62 @@
             <if test="!bleName.equals('-1')">ble_name= #{bleName},</if>
         </trim>
     </update>
+
+    <select id="queryChargingPileState" resultType="com.example.chargingPileSystem.form.StateForm">
+        select sys_charging_pile_info.ble_name,
+               sys_charging_pile_record.charging_time,
+               sys_charging_pile_info.voltage,
+               sys_charging_pile_info.current,
+               sys_charging_pile_info.power
+        from sys_charging_pile_info
+                 inner join sys_charging_pile_record
+                            on sys_charging_pile_info.charging_pile_id = sys_charging_pile_record.charging_pile_id
+        where sys_charging_pile_record.charging_pile_id = #{chargingPileId}
+    </select>
+
     <select id="queryChargingPileList" resultType="com.example.chargingPileSystem.domain.ChargingPileInfo">
         select *
         from sys_charging_pile_info
     </select>
+
     <select id="queryId" resultType="java.lang.String">
         select id
         from sys_charging_pile_info
         where charging_pile_id = #{ChargingPileId}
     </select>
+
     <select id="queryStage" resultType="java.lang.String">
         select stage
         from sys_charging_pile_info
         where charging_pile_id = #{ChargingPileId}
     </select>
+
     <select id="queryStatus" resultType="java.lang.Integer">
         select status
         from sys_charging_pile_info
         where charging_pile_id = #{ChargingPileId}
     </select>
+
     <select id="queryCharging" resultType="java.lang.String">
         select voltage,current,power,accumulated_electric_energy
         from sys_charging_pile_info
         where charging_pile_id = #{ChargingPileId}
     </select>
+
     <delete id="deleteChargingPile">
         delete from sys_charging_pile_info
         where charging_pile_id = #{ChargingPileId}
     </delete>
-    <select id="getPrice" resultType="java.lang.Double">
+
+    <select id="getPrice" resultType="java.lang.Integer">
         select price
         from sys_charging_pile_info
         where charging_pile_id = #{ChargingPileId}
     </select>
+
     <update id="updatePrice">
         update sys_charging_pile_info
         set price = #{ChargingPrice}
-        where charging_pile_id = #{ChargingPileId}
+        where id = #{id}
     </update>
 </mapper>

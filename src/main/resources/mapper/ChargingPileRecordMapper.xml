@@ -7,19 +7,22 @@
         values (#{chargingPileId}, #{upTime}, #{downTime}, #{userOpenId}, #{stage}, #{chargingTime}, #{chargingForm},
                 #{gateStatus}, #{singleEnergy})
     </insert>
+
     <update id="updateChargingPileRecord">
         update sys_charging_pile_record
-        <trim prefix="set" suffixOverrides="," suffix="where charging_pile_id = #{chargingPileId}">
+        <trim prefix="set" suffixOverrides="," suffix="where charging_record_id = #{chargingRecordId}">
             up_time= #{upTime},
             down_time= #{downTime},
             <if test="stage!='-1'">stage=#{stage},</if>
-            <if test="userOpenId!='-1'">user_open_id= #{userOpenId},</if>
+            <if test="userOpenid!='-1'">user_openid= #{userOpenid},</if>
             <if test="chargingTime != -1">charging_time= #{chargingTime},</if>
             <if test="chargingForm!= -1">charging_form= #{chargingForm},</if>
             <if test="gateStatus != -1">gate_status= #{gateStatus},</if>
             <if test="singleEnergy != '-1'">single_energy= #{singleEnergy},</if>
+
         </trim>
     </update>
+
     <select id="queryLastRecord" resultType="com.example.chargingPileSystem.domain.ChargingPileRecord">
         select *
         from sys_charging_pile_record
@@ -27,9 +30,44 @@
         ORDER BY id DESC LIMIT 1
     </select>
 
+    <select id="queryRecordIdByOpenId" resultType="java.lang.String">
+        select charging_record_id
+        from sys_charging_pile_record
+        where user_openid = #{userOpenid}
+    </select>
+
+    <select id="queryRecordByOutTradeNo" resultType="com.example.chargingPileSystem.domain.ChargingPileRecord">
+        select *
+        from sys_charging_pile_record
+        where out_trade_no = #{outTradeNo}
+    </select>
+
     <delete id="deleteChargingPileInfo">
         delete from sys_charging_pile_record
         where charging_pile_id = #{ChargingPileId}
     </delete>
+
+
+    <select id="queryUpTime" resultType="java.lang.String">
+        select up_time
+        from sys_charging_pile_record
+        where charging_pile_id = #{ChargingPileId}
+        ORDER BY id DESC LIMIT 1
+    </select>
+
+    <select id="queryStage" resultType="java.lang.Integer">
+        select stage
+        from sys_charging_pile_record
+        where charging_pile_id = #{chargingPileId}
+        ORDER BY id DESC LIMIT 1
+    </select>
+
+    <select id="queryOrderStatus" resultType="java.lang.Integer">
+        select order_status
+        from sys_charging_pile_record
+        where charging_pile_id = #{ChargingPileId}
+        ORDER BY id DESC LIMIT 1
+    </select>
+
 
 </mapper>

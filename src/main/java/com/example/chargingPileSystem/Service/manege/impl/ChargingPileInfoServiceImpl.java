@@ -3,7 +3,6 @@ package com.example.chargingPileSystem.Service.manege.impl;
 import com.example.chargingPileSystem.Service.manege.ChargingPileInfoService;
 import com.example.chargingPileSystem.commen.R;
 import com.example.chargingPileSystem.domain.ChargingPileInfo;
-import com.example.chargingPileSystem.form.ChargingPileInfoForm;
 import com.example.chargingPileSystem.mapper.ChargingPileInfoMapper;
 import com.example.chargingPileSystem.mapper.ChargingPileRecordMapper;
 import org.springframework.stereotype.Service;
@@ -53,10 +52,11 @@ public class ChargingPileInfoServiceImpl implements ChargingPileInfoService {
         return R.ok("删除数据"+i+"；删除总数据"+a);
     }
 
+
     //获取充电单价
     @Override
-    public R<?> getChargingPrice(String ChargingPileId) {
-        return R.ok(chargingPileInfoMapper.getPrice(ChargingPileId));
+    public int getChargingPrice(String ChargingPileId) {
+        return chargingPileInfoMapper.getPrice(ChargingPileId);
     }
     //修改充电单价
     public R<?> updateChargingPrice(String ChargingPileId,Double ChargingPrice) {

@@ -47,5 +47,11 @@
     <select id="selectByOrderNo" resultType="com.example.chargingPileSystem.domain.PaymentOrder">
         SELECT * FROM sys_payment_record WHERE out_trade_no = #{outTradeNo}
     </select>
+    <select id="queryLastRecord" resultType="com.example.chargingPileSystem.domain.PaymentOrder">
+        select *
+        from sys_payment_record
+        where charging_pile_id = #{chargingPileId}
+        ORDER BY out_trade_no DESC LIMIT 1
+    </select>
 
 </mapper>

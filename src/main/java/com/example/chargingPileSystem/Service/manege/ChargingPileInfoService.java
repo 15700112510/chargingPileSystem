@@ -1,7 +1,6 @@
 package com.example.chargingPileSystem.Service.manege;
 
 import com.example.chargingPileSystem.commen.R;
-import com.example.chargingPileSystem.domain.ChargingPileInfo;
 
 public interface ChargingPileInfoService {
     //1.获取当前所有充电桩
@@ -20,7 +19,7 @@ public interface ChargingPileInfoService {
     public R<?> deleteChargingPile(String ChargingPileId);
 
     //获取充电单价
-    public R<?> getChargingPrice(String ChargingPileId);
+    public int getChargingPrice(String ChargingPileId);
 
     //修改充电单价
     public R<?> updateChargingPrice(String ChargingPileId, Double ChargingPrice);
