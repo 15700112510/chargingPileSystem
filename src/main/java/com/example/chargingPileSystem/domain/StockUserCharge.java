@@ -13,7 +13,7 @@ import java.util.Date;
  */
 @Data
 public class StockUserCharge {
-    //流水号
+    //订单号
     private String outTradeNo;
     //用户openid
     private String userOpenid;

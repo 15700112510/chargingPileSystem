@@ -1,6 +1,7 @@
 package com.example.chargingPileSystem.Service.jsapi;
 
 import com.example.chargingPileSystem.commen.R;
+import com.example.chargingPileSystem.domain.PaymentOrder;
 import com.example.chargingPileSystem.domain.StockUserCharge;
 import com.example.chargingPileSystem.domain.UserInfo;
 import com.github.binarywang.wxpay.bean.order.WxPayMpOrderResult;
@@ -16,7 +17,7 @@ public interface ChargingService {
     public R<?> status(String userOpenId);
 
     //充电
-    public R<?> openPile(String chargingPileId) throws MqttException;
+    public R<?> openPile(PaymentOrder paymentOrder) throws MqttException;
 
 
     //关闭充电
@@ -24,6 +25,12 @@ public interface ChargingService {
 
     //预约充电
     public R<?> appointmentTime(String chargingPileId,String appointmentTime) throws MqttException;
+
+    //根据充电桩编码获取CP信号
+    public R<?> getStage(String ChargingPileId);
+
+    //获取订单状态
+    public int getOrderStatus(String ChargingPileId);
 
 
 }

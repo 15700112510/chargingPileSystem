@@ -3,7 +3,6 @@ package com.example.chargingPileSystem.Service.manege.impl;
 import com.example.chargingPileSystem.Service.manege.ChargingPileInfoService;
 import com.example.chargingPileSystem.commen.R;
 import com.example.chargingPileSystem.domain.ChargingPileInfo;
-import com.example.chargingPileSystem.form.ChargingPileInfoForm;
 import com.example.chargingPileSystem.mapper.ChargingPileInfoMapper;
 import com.example.chargingPileSystem.mapper.ChargingPileRecordMapper;
 import org.springframework.stereotype.Service;
@@ -35,32 +34,33 @@ public class ChargingPileInfoServiceImpl implements ChargingPileInfoService {
 
     //3、获取当前充电桩状态
     @Override
-    public R<?> getChargingPileStatus(String ChargingPileId) {
-        return R.ok(chargingPileInfoMapper.queryStatus(ChargingPileId));
+    public R<?> getChargingPileStatus(String chargingPileId) {
+        return R.ok(chargingPileInfoMapper.queryStatus(chargingPileId));
     }
 
     //4.获取当前机床充电情况
     @Override
-    public R<?> getCharging(String ChargingPileId) {
-        return R.ok(chargingPileInfoMapper.queryCharging(ChargingPileId));
+    public R<?> getCharging(String chargingPileId) {
+        return R.ok(chargingPileInfoMapper.queryCharging(chargingPileId));
     }
 
     //5、删除机器
     @Override
-    public R<?> deleteChargingPile(String ChargingPileId) {
-        int i = chargingPileInfoMapper.deleteChargingPile(ChargingPileId);
-        int a = chargingPileRecordMapper.deleteChargingPileInfo(ChargingPileId);
+    public R<?> deleteChargingPile(String chargingPileId) {
+        int i = chargingPileInfoMapper.deleteChargingPile(chargingPileId);
+        int a = chargingPileRecordMapper.deleteChargingPileInfo(chargingPileId);
         return R.ok("删除数据"+i+"；删除总数据"+a);
     }
 
+
     //获取充电单价
     @Override
-    public R<?> getChargingPrice(String ChargingPileId) {
-        return R.ok(chargingPileInfoMapper.getPrice(ChargingPileId));
+    public int getChargingPrice(String chargingPileId) {
+        return chargingPileInfoMapper.getPrice(chargingPileId);
     }
     //修改充电单价
-    public R<?> updateChargingPrice(String ChargingPileId,Double ChargingPrice) {
-        return R.ok(chargingPileInfoMapper.updatePrice(ChargingPileId, ChargingPrice));
+    public R<?> updateChargingPrice(String chargingPileId,Double chargingPrice) {
+        return R.ok(chargingPileInfoMapper.updatePrice(chargingPileId, chargingPrice));
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.chargingPileSystem.mapper;
 
+import com.example.chargingPileSystem.domain.ChargingPileRecord;
 import com.example.chargingPileSystem.domain.PaymentOrder;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -16,6 +17,9 @@ public interface PaymentMapper {
 
     //更新订单状态
     public void updatePay(PaymentOrder paymentOrder);
+
+    //
+    public PaymentOrder queryLastRecord(String chargingPileId);
 
 //    //查询订单状态
 //    public String queryOrderStatus(String orderId);

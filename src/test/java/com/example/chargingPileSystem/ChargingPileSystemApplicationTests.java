@@ -18,7 +18,7 @@ class ChargingPileSystemApplicationTests {
         PaymentOrder paymentOrder = paymentMapper.selectByOrderNo("20240424193651");
         System.out.println(paymentOrder);
     }
-
+    long timestamp = System.currentTimeMillis();
 //    @Resource
 //    RedisUtil redisUtil;
 //

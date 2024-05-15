@@ -14,7 +14,7 @@ public class ChargingPileInfoController {
     private ChargingPileInfoService chargingPileInfoService;
 
     @GetMapping("/getChargingPrice")
-    public R<?> getChargingPrice(@RequestParam String chargingPileId) throws Exception {
+    public int getChargingPrice(@RequestParam String chargingPileId) throws Exception {
         return chargingPileInfoService.getChargingPrice(chargingPileId);
     }
 
@@ -22,6 +22,7 @@ public class ChargingPileInfoController {
     public R<?> updateChargingPrice(@RequestParam String chargingPileId,@RequestParam Double chargingPrice) throws Exception {
         return chargingPileInfoService.updateChargingPrice(chargingPileId,chargingPrice);
     }
+
     //1.获取当前所有充电桩
     @GetMapping("/all")
     public R<?> ChargingPileInfo() {
@@ -51,4 +52,6 @@ public class ChargingPileInfoController {
     public R<?> DeleteChargingPile(@RequestParam String ChargingPileId) {
         return chargingPileInfoService.deleteChargingPile(ChargingPileId);
     }
+
+
 }

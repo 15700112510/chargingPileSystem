@@ -131,18 +131,22 @@ public class PaymentServiceImpl implements PaymentService {
             return;
         }
 
+
+        long timestamp = System.currentTimeMillis();
         //创建充电记录ID
-        String chargingRecordId = outTradeNo;
+        String chargingRecordId = paymentOrder.getChargingPileId()+timestamp;
 
         paymentOrder.setTransactionId(transactionId);
         paymentOrder.setChargingRecordId(chargingRecordId);
         paymentOrder.setStatus(PaymentConstant.PAY_SUCCESS);
+        paymentOrder.setChargingRecordId(chargingRecordId);
+
         //更新订单支付成功状态
         paymentMapper.updatePay(paymentOrder);
 
         //开启充电桩
         try {
-            chargingService.openPile(paymentOrder.getChargingPileId());
+            chargingService.openPile(paymentOrder);
         } catch (MqttException e) {
             throw new RuntimeException(e);
         }
@@ -254,6 +258,13 @@ public class PaymentServiceImpl implements PaymentService {
         } catch (WxPayException e) {
             e.printStackTrace();
         }
+    }
+
+
+    //    根据充电桩编码查找最新支付记录
+    @Override
+    public PaymentOrder queryLastRecord(String chargePileId) {
+        return paymentMapper.queryLastRecord(chargePileId);
     }
 
 }
