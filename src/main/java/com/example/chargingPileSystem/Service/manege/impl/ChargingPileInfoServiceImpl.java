@@ -58,6 +58,7 @@ public class ChargingPileInfoServiceImpl implements ChargingPileInfoService {
     public int getChargingPrice(String chargingPileId) {
         return chargingPileInfoMapper.getPrice(chargingPileId);
     }
+
     //修改充电单价
     public R<?> updateChargingPrice(String chargingPileId,Double chargingPrice) {
         return R.ok(chargingPileInfoMapper.updatePrice(chargingPileId, chargingPrice));

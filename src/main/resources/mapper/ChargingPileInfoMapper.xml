@@ -6,19 +6,20 @@
         values (#{chargingPileId})
     </insert>
 
-    public int updateStatus(Integer status, String stage, Integer id);
     <update id="updateStatus">
         update sys_charging_pile_info
         set status = #{status},
             stage = #{stage}
         where id = #{id}
     </update>
+
     <update id="updateChargingPile">
         update sys_charging_pile_info
         <trim prefix="set" suffixOverrides="," suffix="where charging_pile_id = #{chargingPileId}">
             <if test="voltage!='-1'">voltage= #{voltage},</if>
             <if test="current!='-1'">current= #{current},</if>
             <if test="power!='-1'">power= #{power},</if>
+            <if test="price!='-1'">price= #{price},</if>
             <if test="accumulatedElectricEnergy!='-1'">accumulated_electric_energy=#{accumulatedElectricEnergy},</if>
             <if test="error != -1">error= #{error},</if>
             <if test="appointmentTime!='-1'">appointment_time= #{appointmentTime},</if>

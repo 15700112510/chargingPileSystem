@@ -78,6 +78,7 @@ public class MsgProcessor implements InitializingBean {
             strings[i] = name.replace("\"", "");
         }
         String imei = strings[0];
+        String x = chargingPileInfoMapper.queryId(imei);
         if (chargingPileInfoMapper.queryId(imei) == null) {
             lastChargingPlieInfo.put(imei, new ChargingPileInfo());
             chargingPileInfoMapper.insertChargingPile(imei);
@@ -159,6 +160,7 @@ public class MsgProcessor implements InitializingBean {
                 chargingPileInfo.setVoltage(voltage);
                 chargingPileInfo.setCurrent(current);
                 chargingPileInfo.setPower(power);
+                chargingPileInfo.setPrice(lastChargingPlieInfo.get(imei).getPrice());
                 chargingPileInfo.setAccumulatedElectricEnergy(accumulatedElectricEnergy);
                 chargingPileInfo.setStage(stage);
                 chargingPileInfo.setError(error);
@@ -184,6 +186,8 @@ public class MsgProcessor implements InitializingBean {
                     }
                     //数据库更新chargingPlieInfo
                     if (contrastChargingPile(imei, chargingPileInfo)) {
+                        System.out.println("更新充电桩信息"+chargingPileInfo.getChargingPileId());
+
                         chargingPileInfoMapper.updateChargingPile(chargingPileInfo);
                     }
                     contrastChargingPileRecord(imei, chargingPileRecord);
@@ -252,7 +256,7 @@ public class MsgProcessor implements InitializingBean {
     }
 
     //设置aliveStatus和更新数据库状态
-    public void setStatus(String imei,String stage , String status) {
+    public void setStatus(String imei,String stage,String status) {
         String id = chargingPileInfoMapper.queryId(imei);
         aliveStatus.replace(id, new Object[]{System.currentTimeMillis(), status});
         chargingPileInfoMapper.updateStatus(Integer.parseInt(status),stage ,Integer.parseInt(id));
@@ -287,11 +291,11 @@ public class MsgProcessor implements InitializingBean {
     public void remainingRefund(String chargingPileId) throws IllegalAccessException {
         ChargingPileRecord chargingPileRecord = chargingPileRecordMapper.queryLastRecord(chargingPileId);
         //计算剩余时间退款
-        int singleEnergy = Integer.parseInt(chargingPileRecord.getSingleEnergy());
-        int expectEnergy = Integer.parseInt(chargingPileRecord.getExpectEnergy());
-        int surplusEnergy = expectEnergy - singleEnergy;
+        double singleEnergy = Double.parseDouble(chargingPileRecord.getSingleEnergy().replaceAll("[^\\d.]+", ""));
+        double expectEnergy = Double.parseDouble(chargingPileRecord.getExpectEnergy().replaceAll("[^\\d.]+", ""));
+        double surplusEnergy = expectEnergy - singleEnergy;
         int price = chargingPileInfoService.getChargingPrice(chargingPileRecord.getChargingPileId());
-        int refundAmount = surplusEnergy / price;
+        int refundAmount = (int) (surplusEnergy*1000/ price);
         //根据当前充电桩编码查找最近支付订单
         PaymentOrder paymentOrder = paymentService.queryLastRecord(chargingPileRecord.getChargingPileId());
         try {
