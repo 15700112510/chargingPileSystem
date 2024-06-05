@@ -4,9 +4,11 @@ import cn.hutool.core.date.DateUtil;
 import com.example.chargingPileSystem.Service.jsapi.ChargingService;
 import com.example.chargingPileSystem.Service.jsapi.PaymentService;
 import com.example.chargingPileSystem.commen.R;
+import com.example.chargingPileSystem.constant.ChargingPileRecordConstant;
 import com.example.chargingPileSystem.constant.PaymentConstant;
 import com.example.chargingPileSystem.domain.PaymentOrder;
 import com.example.chargingPileSystem.enums.ErrorEnum;
+import com.example.chargingPileSystem.mapper.ChargingPileRecordMapper;
 import com.example.chargingPileSystem.mapper.PaymentMapper;
 import com.example.chargingPileSystem.mapper.UserMapper;
 import com.github.binarywang.wxpay.bean.notify.WxPayOrderNotifyV3Result;
@@ -37,6 +39,8 @@ public class PaymentServiceImpl implements PaymentService {
     private UserMapper userMapper;
     @Resource
     private ChargingService chargingService;
+    @Resource
+    private ChargingPileRecordMapper chargingPileRecordMapper;
 
     /**
      * 创建预订单
@@ -129,6 +133,11 @@ public class PaymentServiceImpl implements PaymentService {
             log.info("支付回调订单已支付");
             return;
         }
+        //判断充电桩是否被占用
+        if(chargingService.getOrderStatus(paymentOrder.getChargingPileId()) == ChargingPileRecordConstant.ORDER_ACCOMPLISHED){
+            log.info("充电桩已被占用");
+            return;
+        }
 
 
         long timestamp = System.currentTimeMillis();
@@ -150,15 +159,15 @@ public class PaymentServiceImpl implements PaymentService {
             throw new RuntimeException(e);
         }
 
-        try {
-            System.out.println("开始退款");
-            Thread.sleep(3000);
-            redRefundPay(paymentMapper.selectByOrderNo(outTradeNo), paymentOrder.getAmount());
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (WxPayException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            System.out.println("开始退款");
+//            Thread.sleep(3000);
+//            redRefundPay(paymentMapper.selectByOrderNo(outTradeNo), paymentOrder.getAmount());
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        } catch (WxPayException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     /**
@@ -205,6 +214,7 @@ public class PaymentServiceImpl implements PaymentService {
                 paymentOrder.setStatus(PaymentConstant.PAY_SUCCESS);
                 //更新订单支付成功状态
                 paymentMapper.updatePay(paymentOrder);
+                chargingPileRecordMapper.updateOrderStatus(paymentOrder.getChargingRecordId(),ChargingPileRecordConstant.ORDER_ACCOMPLISHED);
                 break;
             case "CLOSED":
                 System.out.println("退款关闭");

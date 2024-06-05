@@ -42,35 +42,38 @@ public class ChargingServiceImpl implements ChargingService {
         String topic = "CDZ/" + paymentOrder.getChargingPileId() + "/Config";
         MqttMessage msg = new MqttMessage(content.getBytes());
         System.out.println("mqttClient.isConnected():" + mqttClient.isConnected());
-        mqttClient.publish(topic, msg);
+//        mqttClient.publish(topic, msg);
         //如果CP信号握手成功，则准备充电开启充电桩
-        if (chargingPileRecordMapper.queryStage(paymentOrder.getChargingPileId()) == 6) {
-            mqttClient.publish(topic, msg);
-            ChargingPileRecord chargingPileRecord = new ChargingPileRecord();
+//        if (chargingPileRecordMapper.queryStage(paymentOrder.getChargingPileId()) == 9 ) {
+        mqttClient.publish(topic, msg);
+        ChargingPileRecord chargingPileRecord = new ChargingPileRecord();
 
-            //设置chargingPileId
-            chargingPileRecord.setChargingPileId(paymentOrder.getChargingPileId());
-            //设置chargingRecordId
-            chargingPileRecord.setChargingRecordId(paymentOrder.getChargingRecordId());
-            //设置预计充电量
-            int Amount = paymentOrder.getAmount();
-            int price = chargingPileInfoService.getChargingPrice(paymentOrder.getChargingPileId());
-            String expectEnergy = String.valueOf(Amount / price);
-            chargingPileRecord.setExpectEnergy(expectEnergy);
-            //设置充电订单创建时间
-            long currentTimeMillis = System.currentTimeMillis();
-            Timestamp creatTime = new Timestamp(currentTimeMillis);
-            chargingPileRecord.setCreatTime(creatTime);
-            //设置充电人员
-            chargingPileRecord.setUserOpenid(paymentOrder.getUserOpenid());
-            //设置订单状态（未完成）
-            chargingPileRecord.setOrderStatus(ChargingPileRecordConstant.ORDER_UNACCOMPLISHED);
-            //设置充电开始时间？？？
+        //设置chargingPileId
+        chargingPileRecord.setChargingPileId(paymentOrder.getChargingPileId());
+        //设置chargingRecordId
+        chargingPileRecord.setChargingRecordId(paymentOrder.getChargingRecordId());
+        //设置预计充电量
+        int Amount = paymentOrder.getAmount();
+        int price = chargingPileInfoService.getChargingPrice(paymentOrder.getChargingPileId());
+        String expectEnergy = String.valueOf(Amount / price);
+        chargingPileRecord.setExpectEnergy(expectEnergy);
+        //设置充电订单创建时间
+        long currentTimeMillis = System.currentTimeMillis();
+        Timestamp creatTime = new Timestamp(currentTimeMillis);
+        chargingPileRecord.setCreatTime(creatTime);
+        //设置充电人员
+        chargingPileRecord.setUserOpenid(paymentOrder.getUserOpenid());
+        //设置订单状态（未完成）
+        chargingPileRecord.setOrderStatus(ChargingPileRecordConstant.ORDER_UNACCOMPLISHED);
+        chargingPileRecord.setSingleEnergy("0");
+        //设置充电开始时间
+        chargingPileRecord.setUpTime(creatTime);
 
-            pileRecordService.insertChargingRecord(chargingPileRecord);
-            return R.ok("充电桩开启成功");
-        }
-        return R.fail(ErrorEnum.CHARGING_PILE_OPENING_ERROR);
+//, #{upTime}, #{downTime}
+        pileRecordService.insertChargingRecord(chargingPileRecord);
+        return R.ok("充电桩开启成功");
+//        }
+//        return R.fail(ErrorEnum.CHARGING_PILE_OPENING_ERROR);
     }
 
     @Override
@@ -80,6 +83,12 @@ public class ChargingServiceImpl implements ChargingService {
         MqttMessage msg = new MqttMessage(content.getBytes());
         if (pileRecordService.queryLastChargingRecord(chargingPileId).getDownTime() == null) {
             mqttClient.publish(topic, msg);
+            //更新充电结束时间
+            ChargingPileRecord chargingPileRecord = pileRecordService.queryLastChargingRecord(chargingPileId);
+            long currentTimeMillis = System.currentTimeMillis();
+            Timestamp downTime = new Timestamp(currentTimeMillis);
+            chargingPileRecord.setDownTime(downTime);
+            pileRecordService.insertChargingRecord(chargingPileRecord);
             return R.ok("充电桩关闭成功");
         }
         return R.fail(ErrorEnum.CHARGING_PILE_OPENING_ERROR);

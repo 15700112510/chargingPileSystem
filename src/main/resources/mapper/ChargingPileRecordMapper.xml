@@ -2,10 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.example.chargingPileSystem.mapper.ChargingPileRecordMapper">
     <insert id="insertChargingPileRecord">
-        insert into sys_charging_pile_record(charging_pile_id, up_time, down_time, user_openid, stage, charging_time,
-                                             charging_form, gate_status, single_energy)
-        values (#{chargingPileId}, #{upTime}, #{downTime}, #{userOpenid}, #{stage}, #{chargingTime}, #{chargingForm},
-                #{gateStatus}, #{singleEnergy})
+        insert into sys_charging_pile_record(charging_record_id,charging_pile_id, up_time, user_openid,  charging_time,
+                                             charging_form, gate_status, single_energy,order_status)
+        values (#{chargingRecordId},#{chargingPileId}, #{upTime}, #{userOpenid}, #{chargingTime}, #{chargingForm},
+                #{gateStatus}, #{singleEnergy}, #{orderStatus})
     </insert>
 
     <update id="updateChargingPileRecord">
@@ -13,14 +13,17 @@
         <trim prefix="set" suffixOverrides="," suffix="where charging_record_id = #{chargingRecordId}">
             up_time= #{upTime},
             down_time= #{downTime},
-            <if test="stage!='-1'">stage=#{stage},</if>
             <if test="userOpenid!='-1'">user_openid= #{userOpenid},</if>
             <if test="chargingTime != -1">charging_time= #{chargingTime},</if>
             <if test="chargingForm!= -1">charging_form= #{chargingForm},</if>
             <if test="gateStatus != -1">gate_status= #{gateStatus},</if>
             <if test="singleEnergy != '-1'">single_energy= #{singleEnergy},</if>
-
         </trim>
+    </update>
+    <update id="updateOrderStatus">
+        update sys_charging_pile_record
+           set order_status= #{orderStatus}
+        where charging_record_id = #{chargingRecordId}
     </update>
 
     <select id="queryLastRecord" resultType="com.example.chargingPileSystem.domain.ChargingPileRecord">
