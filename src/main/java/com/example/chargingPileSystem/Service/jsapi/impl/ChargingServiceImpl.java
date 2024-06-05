@@ -104,12 +104,11 @@ public class ChargingServiceImpl implements ChargingService {
         }
         return R.fail(ErrorEnum.CHARGING_PLIE_APPOINTMENT_ERROR);
     }
-
+    // 充电时充电桩状态
     @Override
     public R<?> state(String chargingPileId) {
-
-        int stage = chargingPileRecordMapper.queryStage(chargingPileId);
-        if (!(stage == 12)) {
+        String stage = chargingPileInfoMapper.queryStage(chargingPileId);
+        if ((stage == "12")) {
             return R.fail(ErrorEnum.CHARGING_PLIE_ID_NO_CONNECT_ERROR, "充电桩未连接");
         }
         StateForm stateForm = chargingPileInfoMapper.queryChargingPileState(chargingPileId);

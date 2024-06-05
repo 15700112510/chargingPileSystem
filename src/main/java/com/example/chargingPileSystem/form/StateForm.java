@@ -20,8 +20,4 @@ public class StateForm {
     //充电功率；
     private String power;
 
-
-
-
-
 }

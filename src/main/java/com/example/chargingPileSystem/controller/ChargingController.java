@@ -40,10 +40,10 @@ public class ChargingController {
     public R< ? > appointmentCharging(@RequestParam String chargingPileId,@RequestParam String appointmentTime) throws MqttException{
         return chargingService.appointmentTime(chargingPileId,appointmentTime);
     }
-
-    @PostMapping( "/state")
-    public R<?> state(@RequestBody ChargingPileRecord chargingPileRecord) {
-        return chargingService.state(chargingPileRecord.getChargingPileId());
+    // 充电时充电桩状态
+    @GetMapping( "/state")
+    public R<?> state(@RequestParam String chargingPileId) {
+        return chargingService.state(chargingPileId);
     }
 
     //获取CP信号
