@@ -41,6 +41,7 @@ public class PaymentController {
         paymentService.PayCallback(xmlData);
         return WxPayNotifyResponse.success("处理成功!");
     }
+
     /**
      * 微信退款回调
      */

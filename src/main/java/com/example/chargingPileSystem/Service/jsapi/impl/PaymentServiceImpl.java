@@ -27,7 +27,6 @@ import java.util.Date;
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
-
     @Resource
     private WxPayService wxPayService;
     @Resource
