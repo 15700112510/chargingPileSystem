@@ -28,4 +28,8 @@ public interface ChargingPileRecordMapper {
     //获取订单状态
     public Integer queryOrderStatus(String chargingPileId);
 
+    //更新订单状态
+    public int updateOrderStatus(String chargingRecordId,int orderStatus);
+
+
 }

@@ -178,6 +178,8 @@ public class MsgProcessor implements InitializingBean {
                 chargingPileRecord.setChargingForm(chargingForm);
                 chargingPileRecord.setGateStatus(gateStatus);
 
+                this.setStatus(imei,stage,status);
+
                 if (!odr.equals("0,0,23,1,1,0") && !chargingUpTime.equals("0-0-0 0:0:0")) {
                     chargingPileRecord.setUpTime(this.getTimestamp(chargingUpTime));
                     if (gateStatus == 0 && !this.getTimestamp(chargingUpTime).equals(this.getTimestamp(dateString))) {
