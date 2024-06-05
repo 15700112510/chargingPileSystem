@@ -3,9 +3,11 @@ package com.example.chargingPileSystem.Service.jsapi.impl;
 import cn.hutool.core.date.DateUtil;
 import com.example.chargingPileSystem.Service.jsapi.ChargingService;
 import com.example.chargingPileSystem.Service.jsapi.PaymentService;
+import com.example.chargingPileSystem.Service.manege.ChargingPileInfoService;
 import com.example.chargingPileSystem.commen.R;
 import com.example.chargingPileSystem.constant.ChargingPileRecordConstant;
 import com.example.chargingPileSystem.constant.PaymentConstant;
+import com.example.chargingPileSystem.domain.ChargingPileRecord;
 import com.example.chargingPileSystem.domain.PaymentOrder;
 import com.example.chargingPileSystem.enums.ErrorEnum;
 import com.example.chargingPileSystem.mapper.ChargingPileRecordMapper;
@@ -42,6 +44,9 @@ public class PaymentServiceImpl implements PaymentService {
     private ChargingService chargingService;
     @Resource
     private ChargingPileRecordMapper chargingPileRecordMapper;
+    @Resource
+    private ChargingPileInfoService chargingPileInfoService;
+
 
     /**
      * 创建预订单
@@ -134,11 +139,6 @@ public class PaymentServiceImpl implements PaymentService {
             log.info("支付回调订单已支付");
             return;
         }
-        //判断充电桩是否被占用
-        if(chargingService.getOrderStatus(paymentOrder.getChargingPileId()) == ChargingPileRecordConstant.ORDER_ACCOMPLISHED){
-            log.info("充电桩已被占用");
-            return;
-        }
 
 
         long timestamp = System.currentTimeMillis();
@@ -169,6 +169,40 @@ public class PaymentServiceImpl implements PaymentService {
 //        } catch (WxPayException e) {
 //            throw new RuntimeException(e);
 //        }
+    }
+    /**
+     * 剩余退款
+     *
+     * @param
+     */
+    public void remainingRefund(String chargingPileId) {
+        ChargingPileRecord chargingPileRecord = chargingPileRecordMapper.queryLastRecord(chargingPileId);
+        //计算剩余时间退款
+        double singleEnergy = Double.parseDouble(chargingPileRecord.getSingleEnergy().replaceAll("[^\\d.]+", ""));
+        double expectEnergy = Double.parseDouble(chargingPileRecord.getExpectEnergy().replaceAll("[^\\d.]+", ""));
+        double surplusEnergy = expectEnergy - singleEnergy;
+        int price = chargingPileInfoService.getChargingPrice(chargingPileRecord.getChargingPileId());
+        int refundAmount = (int) (surplusEnergy * 1000 / price);
+        //根据当前充电桩编码查找最近支付订单
+        PaymentOrder paymentOrder = this.queryLastRecord(chargingPileRecord.getChargingPileId());
+        try {
+            this.redRefundPay(paymentOrder, refundAmount);
+        } catch (WxPayException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    /**
+     * 全额退款
+     *
+     * @param
+     */
+    public void fullRefund(String chargingPileId) {
+        PaymentOrder paymentOrder = this.queryLastRecord(chargingPileId);
+        try {
+            this.redRefundPay(paymentOrder, paymentOrder.getAmount());
+        } catch (WxPayException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -212,10 +246,6 @@ public class PaymentServiceImpl implements PaymentService {
         switch (status) {
             case "SUCCESS":
                 System.out.println("退款成功");
-                paymentOrder.setStatus(PaymentConstant.PAY_SUCCESS);
-                //更新订单支付成功状态
-                paymentMapper.updatePay(paymentOrder);
-                chargingPileRecordMapper.updateOrderStatus(paymentOrder.getChargingRecordId(),ChargingPileRecordConstant.ORDER_ACCOMPLISHED);
                 break;
             case "CLOSED":
                 System.out.println("退款关闭");
@@ -226,6 +256,15 @@ public class PaymentServiceImpl implements PaymentService {
             case "PROCESSING":
                 System.out.println("退款处理中");
                 paymentOrder.setStatus(PaymentConstant.PAY_REFUND_PROCESSING);
+                paymentOrder.setStatus(PaymentConstant.PAY_SUCCESS);
+                try {
+                    chargingService.closePile(paymentOrder.getChargingPileId());
+                } catch (MqttException e) {
+                    throw new RuntimeException(e);
+                }
+                //更新订单支付成功状态
+                paymentMapper.updatePay(paymentOrder);
+                chargingPileRecordMapper.updateOrderStatus(paymentOrder.getChargingRecordId(),ChargingPileRecordConstant.ORDER_ACCOMPLISHED);
                 //更新订单支付成功状态
                 paymentMapper.updatePay(paymentOrder);
                 break;
@@ -243,6 +282,8 @@ public class PaymentServiceImpl implements PaymentService {
                 break;
         }
     }
+
+
 
     /**
      * 退款回调
