@@ -104,6 +104,7 @@ public class ChargingServiceImpl implements ChargingService {
         }
         return R.fail(ErrorEnum.CHARGING_PLIE_APPOINTMENT_ERROR);
     }
+
     // 充电时充电桩状态
     @Override
     public R<?> state(String chargingPileId) {
