@@ -41,6 +41,7 @@ logging:
     com.example.chargingPileSystem.mapper: info
 
 
+
 # 微信核心参数
 wechat:
   appId: wx04a5a6484e9716c2

@@ -27,6 +27,7 @@ public class UserController {
         return userService.login(loginForm);
     }
 
+
     @GetMapping("/publicKey")
     public String getPublicKey() throws Exception {
         return RSAUtils.getPublicKeyStr(redisUtil.getPublicKey());
@@ -36,11 +37,6 @@ public class UserController {
     public R<?> getPhoneNumber(@RequestBody String code) throws Exception {
         return userService.getPhoneNumber(code);
     }
-
-//    @GetMapping("/getToken")
-//    public JSONObject getToken(String code) throws Exception {
-//        return userService.getToken(code);
-//    }
 
 
 //

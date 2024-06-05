@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
 //        }
 
         //判断openid是否为空
-        if (userInfo.getUserOpenId() == null) {
+        if (userInfo.getUserOpenid() == null) {
             return R.fail(ErrorEnum.USER_OPEN_ID_EMPTY_ERROR);
         }
 
@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
                 token(token).
                 chargingPileId(userInfo.getChargingPileId()).
                 userPhone(userInfo.getUserPhone()).
-                userOpenId(userInfo.getUserOpenId()).
+                userOpenid(userInfo.getUserOpenid()).
                 userName(userInfo.getUserName()).
                 role(userInfo.getRole()).build();
         return R.ok(loginBackForm);
@@ -129,7 +129,7 @@ public class UserServiceImpl implements UserService {
 //        }
 
         //判断openid是否为空
-        if (userInfo.getUserOpenId() == null) {
+        if (userInfo.getUserOpenid() == null) {
             return R.fail(ErrorEnum.USER_OPEN_ID_EMPTY_ERROR);
         }
 

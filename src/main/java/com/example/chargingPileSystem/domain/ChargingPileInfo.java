@@ -3,6 +3,8 @@ package com.example.chargingPileSystem.domain;
 import com.example.chargingPileSystem.commen.PropertyIgnore;
 import lombok.Data;
 
+import java.sql.Timestamp;
+
 @Data
 public class ChargingPileInfo {
     @PropertyIgnore
@@ -17,6 +19,8 @@ public class ChargingPileInfo {
     private String power;
     //电价:每千瓦时充电价格
     private double price;
+    //经纬度
+    private String location;
     //累计电量
     private String accumulatedElectricEnergy;
     //状态
@@ -31,5 +35,6 @@ public class ChargingPileInfo {
     private int status;
     //蓝牙名称
     private String bleName;
-
+    //更新时间
+    private Timestamp updataTime;
 }

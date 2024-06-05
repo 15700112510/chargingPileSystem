@@ -9,10 +9,10 @@ import java.sql.Timestamp;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentOrder {
+public class  PaymentOrder {
     //数据库记录id
     private Integer id;
-    //流水号
+    //订单号
     private String outTradeNo;
     //用户openid
     private String userOpenid;

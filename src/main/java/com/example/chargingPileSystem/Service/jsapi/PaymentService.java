@@ -30,4 +30,7 @@ public interface PaymentService {
      * 退款回调
      */
     public void redRefundNotify(String xmlData);
+
+//    根据充电桩编码查找最新支付记录
+    public PaymentOrder queryLastRecord(String chargePileId);
 }

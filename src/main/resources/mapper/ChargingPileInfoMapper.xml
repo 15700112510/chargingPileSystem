@@ -8,15 +8,18 @@
 
     <update id="updateStatus">
         update sys_charging_pile_info
-        set status = #{status}
+        set status = #{status},
+            stage = #{stage}
         where id = #{id}
     </update>
+
     <update id="updateChargingPile">
         update sys_charging_pile_info
         <trim prefix="set" suffixOverrides="," suffix="where charging_pile_id = #{chargingPileId}">
             <if test="voltage!='-1'">voltage= #{voltage},</if>
             <if test="current!='-1'">current= #{current},</if>
             <if test="power!='-1'">power= #{power},</if>
+            <if test="price!='-1'">price= #{price},</if>
             <if test="accumulatedElectricEnergy!='-1'">accumulated_electric_energy=#{accumulatedElectricEnergy},</if>
             <if test="error != -1">error= #{error},</if>
             <if test="appointmentTime!='-1'">appointment_time= #{appointmentTime},</if>
@@ -26,33 +29,63 @@
             <if test="!bleName.equals('-1')">ble_name= #{bleName},</if>
         </trim>
     </update>
+
+    <select id="queryChargingPileState" resultType="com.example.chargingPileSystem.form.StateForm">
+        select sys_charging_pile_info.ble_name,
+               sys_charging_pile_record.charging_time,
+               sys_charging_pile_info.voltage,
+               sys_charging_pile_info.current,
+               sys_charging_pile_info.power
+        from sys_charging_pile_info
+                 inner join sys_charging_pile_record
+                            on sys_charging_pile_info.charging_pile_id = sys_charging_pile_record.charging_pile_id
+        where sys_charging_pile_record.charging_pile_id = #{chargingPileId}
+    </select>
+
     <select id="queryChargingPileList" resultType="com.example.chargingPileSystem.domain.ChargingPileInfo">
         select *
         from sys_charging_pile_info
     </select>
+
     <select id="queryId" resultType="java.lang.String">
         select id
         from sys_charging_pile_info
-        where charging_pile_id = #{ChargingPileId}
+        where charging_pile_id = #{chargingPileId}
     </select>
+
     <select id="queryStage" resultType="java.lang.String">
         select stage
         from sys_charging_pile_info
-        where charging_pile_id = #{ChargingPileId}
+        where charging_pile_id = #{chargingPileId}
     </select>
+
     <select id="queryStatus" resultType="java.lang.Integer">
         select status
         from sys_charging_pile_info
-        where charging_pile_id = #{ChargingPileId}
+        where charging_pile_id = #{chargingPileId}
     </select>
+
     <select id="queryCharging" resultType="java.lang.String">
         select voltage,current,power,accumulated_electric_energy
         from sys_charging_pile_info
-        where charging_pile_id = #{ChargingPileId}
+        where charging_pile_id = #{chargingPileId}
     </select>
+
     <delete id="deleteChargingPile">
         delete from sys_charging_pile_info
-        where charging_pile_id = #{ChargingPileId}
+        where charging_pile_id = #{chargingPileId}
     </delete>
 
+    <select id="getPrice" resultType="java.lang.Integer">
+        select price
+        from sys_charging_pile_info
+        where charging_pile_id = #{chargingPileId}
+        ORDER BY id DESC LIMIT 1
+    </select>
+
+    <update id="updatePrice">
+        update sys_charging_pile_info
+        set price = #{chargingPrice}
+        where id = #{id}
+    </update>
 </mapper>
