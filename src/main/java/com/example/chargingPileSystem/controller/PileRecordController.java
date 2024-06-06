@@ -7,6 +7,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RestController
 @RequestMapping("/charging/api/record")
@@ -39,6 +40,12 @@ public class PileRecordController {
         return pileRecordService.getRecordByOutTradeNo(outTradeNo);
     }
 
+    //根据用户openid返回该用户全部订单
+    @GetMapping("/getUserRecord")
+    public R<List<ChargingPileRecord>> getUserRecord(@RequestParam String userOpenId) {
+        List<ChargingPileRecord> records = pileRecordService.getAllRecordByUserOpenId(userOpenId);
+        return R.ok(records);
+    }
 
 
 }

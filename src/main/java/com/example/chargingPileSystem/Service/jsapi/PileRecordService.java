@@ -4,6 +4,8 @@ import com.example.chargingPileSystem.commen.R;
 import com.example.chargingPileSystem.domain.ChargingPileRecord;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
+import java.util.List;
+
 public interface PileRecordService {
     //开始充电
 
@@ -18,4 +20,8 @@ public interface PileRecordService {
 
     //根据订单号outTradeNo返回record实体类
     public ChargingPileRecord getRecordByOutTradeNo(String outTradeNo);
+
+    //根据用户openid返回该用户全部订单
+    List<ChargingPileRecord> getAllRecordByUserOpenId(String userOpenId);
+
 }

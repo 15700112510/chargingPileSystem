@@ -72,5 +72,11 @@
         ORDER BY id DESC LIMIT 1
     </select>
 
+    <select id="getAllRecordByUserOpenId" resultType="com.example.chargingPileSystem.domain.ChargingPileRecord">
+        select *
+        from sys_charging_pile_record
+        where user_openid = #{userOpenId}
+    </select>
+
 
 </mapper>
