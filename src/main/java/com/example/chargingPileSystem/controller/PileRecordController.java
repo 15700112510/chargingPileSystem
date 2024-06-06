@@ -37,7 +37,7 @@ public class PileRecordController {
     //根据订单号outTradeNo返回record实体类
     @PostMapping("/record")
     public ChargingPileRecord getRecordByOutTradeNo(@RequestBody String outTradeNo) throws MqttException {
-        return pileRecordService.getRecordByOutTradeNo(outTradeNo);
+            return pileRecordService.getRecordByOutTradeNo(outTradeNo);
     }
 
     //根据用户openid返回该用户全部订单
@@ -48,4 +48,9 @@ public class PileRecordController {
     }
 
 
+    //获取充电所付款金额
+    @GetMapping("/getPaidPrice")
+    public  R<?> getPaidPrice(@RequestParam String chargingPileId) {
+        return pileRecordService.getPaidPrice(chargingPileId);
+    }
 }

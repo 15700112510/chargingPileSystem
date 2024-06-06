@@ -24,4 +24,7 @@ public interface PileRecordService {
     //根据用户openid返回该用户全部订单
     List<ChargingPileRecord> getAllRecordByUserOpenId(String userOpenId);
 
+    //获取充电所付款金额
+    public R<?> getPaidPrice(String chargingPileId) ;
+
 }

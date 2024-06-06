@@ -51,4 +51,10 @@ public class PileRecordServiceImpl implements PileRecordService {
     public List<ChargingPileRecord> getAllRecordByUserOpenId(String userOpenId) {
         return chargingPileRecordMapper.getAllRecordByUserOpenId(userOpenId);
     }
+
+    //获取充电所付款金额
+    @Override
+    public R<?> getPaidPrice(String chargingPileId) {
+        return R.ok(chargingPileRecordMapper.getPaidPrice(chargingPileId));
+    }
 }

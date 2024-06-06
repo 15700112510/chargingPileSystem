@@ -77,6 +77,11 @@
         from sys_charging_pile_record
         where user_openid = #{userOpenId}
     </select>
-
+    <select id="getPaidPrice" resultType="java.lang.Integer">
+        select amount
+        from sys_payment_record
+        where charging_pile_id = #{chargingPileId}
+        ORDER BY id DESC LIMIT 1
+    </select>
 
 </mapper>
