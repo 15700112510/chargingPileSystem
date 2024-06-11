@@ -16,8 +16,8 @@ public class PileRecordController {
     private PileRecordService pileRecordService;
 
     //查找最近一条充电记录
-    @GEMapping("/lastRecord")
-    public ChargingPileRecord queryLastChargingRecord(@RequestBody String chargingPileId) throws MqttException {
+    @PostMapping("/lastRecord")
+    public ChargingPileRecord queryLastChargingRecord(@RequestParam String chargingPileId) throws MqttException {
         return pileRecordService.queryLastChargingRecord(chargingPileId);
     }
 
