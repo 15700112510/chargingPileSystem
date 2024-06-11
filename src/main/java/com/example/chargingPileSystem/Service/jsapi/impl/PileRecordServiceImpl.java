@@ -13,6 +13,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 
 @Service
@@ -43,5 +44,17 @@ public class PileRecordServiceImpl implements PileRecordService {
     @Override
     public ChargingPileRecord getRecordByOutTradeNo(String outTradeNo) {
         return chargingPileRecordMapper.queryRecordByOutTradeNo(outTradeNo);
+    }
+
+    //根据用户openid返回该用户全部订单
+    @Override
+    public List<ChargingPileRecord> getAllRecordByUserOpenId(String userOpenId) {
+        return chargingPileRecordMapper.getAllRecordByUserOpenId(userOpenId);
+    }
+
+    //获取充电所付款金额
+    @Override
+    public R<?> getPaidPrice(String chargingPileId) {
+        return R.ok(chargingPileRecordMapper.getPaidPrice(chargingPileId));
     }
 }

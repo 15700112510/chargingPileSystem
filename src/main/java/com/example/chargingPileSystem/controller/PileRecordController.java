@@ -7,6 +7,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RestController
 @RequestMapping("/charging/api/record")
@@ -16,7 +17,7 @@ public class PileRecordController {
     private PileRecordService pileRecordService;
 
     //查找最近一条充电记录
-    @PostMapping("/lastRecord")
+    @GetMapping("/lastRecord")
     public ChargingPileRecord queryLastChargingRecord(@RequestParam String chargingPileId) throws MqttException {
         return pileRecordService.queryLastChargingRecord(chargingPileId);
     }
@@ -36,9 +37,20 @@ public class PileRecordController {
     //根据订单号outTradeNo返回record实体类
     @PostMapping("/record")
     public ChargingPileRecord getRecordByOutTradeNo(@RequestBody String outTradeNo) throws MqttException {
-        return pileRecordService.getRecordByOutTradeNo(outTradeNo);
+            return pileRecordService.getRecordByOutTradeNo(outTradeNo);
+    }
+
+    //根据用户openid返回该用户全部订单
+    @GetMapping("/getUserRecord")
+    public R<List<ChargingPileRecord>> getUserRecord(@RequestParam String userOpenId) {
+        List<ChargingPileRecord> records = pileRecordService.getAllRecordByUserOpenId(userOpenId);
+        return R.ok(records);
     }
 
 
-
+    //获取充电所付款金额
+    @GetMapping("/getPaidPrice")
+    public  R<?> getPaidPrice(@RequestParam String chargingPileId) {
+        return pileRecordService.getPaidPrice(chargingPileId);
+    }
 }

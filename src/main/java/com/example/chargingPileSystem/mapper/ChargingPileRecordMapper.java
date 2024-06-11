@@ -3,6 +3,8 @@ package com.example.chargingPileSystem.mapper;
 import com.example.chargingPileSystem.domain.ChargingPileRecord;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface ChargingPileRecordMapper {
     //获取最近一条充电记录
@@ -31,5 +33,10 @@ public interface ChargingPileRecordMapper {
     //更新订单状态
     public int updateOrderStatus(String chargingRecordId,int orderStatus);
 
+    //根据用户openid返回该用户全部订单
+    List<ChargingPileRecord> getAllRecordByUserOpenId(String userOpenId);
+
+    //获取充电所付款金额
+    public Integer getPaidPrice(String chargingPileId);
 
 }

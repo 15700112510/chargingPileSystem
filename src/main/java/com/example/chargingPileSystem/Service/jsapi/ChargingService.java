@@ -11,7 +11,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 public interface ChargingService {
 
     // 充电时充电桩状态
-    public R<?> state(String userOpenId);
+    public R<?> state(String chargingPileId);
 
     //充电前status
     public R<?> status(String userOpenId);

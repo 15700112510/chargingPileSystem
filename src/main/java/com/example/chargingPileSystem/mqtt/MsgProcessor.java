@@ -206,7 +206,7 @@ public class MsgProcessor implements InitializingBean {
             long currentTimeMillis  = System.currentTimeMillis();
             Timestamp downTime = new Timestamp(currentTimeMillis);
             chargingPileRecord.setDownTime(downTime);
-            remainingRefund(chargingPileRecord.getChargingPileId());
+            paymentService.remainingRefund(chargingPileRecord.getChargingPileId());
             chargingPileRecord.setOrderStatus(ChargingPileRecordConstant.ORDER_ACCOMPLISHED);
         } else {
             double singleEnergy = Double.parseDouble(chargingPileRecord.getSingleEnergy().substring(0, chargingPileRecord.getSingleEnergy().length() - 3));
@@ -290,22 +290,7 @@ public class MsgProcessor implements InitializingBean {
         return result;
     }
 
-    public void remainingRefund(String chargingPileId) throws IllegalAccessException {
-        ChargingPileRecord chargingPileRecord = chargingPileRecordMapper.queryLastRecord(chargingPileId);
-        //计算剩余时间退款
-        double singleEnergy = Double.parseDouble(chargingPileRecord.getSingleEnergy().replaceAll("[^\\d.]+", ""));
-        double expectEnergy = Double.parseDouble(chargingPileRecord.getExpectEnergy().replaceAll("[^\\d.]+", ""));
-        double surplusEnergy = expectEnergy - singleEnergy;
-        int price = chargingPileInfoService.getChargingPrice(chargingPileRecord.getChargingPileId());
-        int refundAmount = (int) (surplusEnergy*1000/ price);
-        //根据当前充电桩编码查找最近支付订单
-        PaymentOrder paymentOrder = paymentService.queryLastRecord(chargingPileRecord.getChargingPileId());
-        try {
-            paymentService.redRefundPay(paymentOrder, refundAmount);
-        } catch (WxPayException e) {
-            throw new RuntimeException(e);
-        }
-    }
+
 }
 
 

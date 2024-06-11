@@ -25,7 +25,14 @@ public interface PaymentService {
      *  退款
      */
     public void redRefundPay(PaymentOrder paymentOrder,int refundAmount) throws WxPayException;
-
+    /**
+     *  剩余退款
+     */
+    public void remainingRefund(String chargingPileId);
+    /**
+     *  全额退款
+     */
+    public void fullRefund(String chargingPileId) ;
     /**
      * 退款回调
      */
@@ -33,4 +40,6 @@ public interface PaymentService {
 
 //    根据充电桩编码查找最新支付记录
     public PaymentOrder queryLastRecord(String chargePileId);
+
+;
 }
