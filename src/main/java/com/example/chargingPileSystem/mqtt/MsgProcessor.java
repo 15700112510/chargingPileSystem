@@ -115,6 +115,7 @@ public class MsgProcessor implements InitializingBean {
                 //单次电能16608886.00000krh//2
                 String singleEnergy = strings[10];
 
+
                 //12:充电桩未连接 9:充电桩连接车体 6:充电桩握手成功，准备充电//1与18字段一样
                 String stage = strings[11];
 
