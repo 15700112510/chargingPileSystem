@@ -16,6 +16,7 @@ public class JwtUtil {
 
         JwtBuilder jwtBuilder = Jwts.builder().setClaims(claims).signWith(SignatureAlgorithm.HS512, JwtConstant.SECRET);
 
+        //设置过期时间
         if (Objects.nonNull(ttlMillis)) {
             jwtBuilder.setExpiration(new java.util.Date(System.currentTimeMillis() + ttlMillis)).compact();
         }
