@@ -22,12 +22,12 @@ spring:
 
 mqtt:
   enable: true
-  host: tcp://211.103.33.70:2883
-  username: server
-  password: public
+  host: tcp://118.31.104.26:1883
+  username: ''
+  password: ''
   timeout: 10
   keepAlive: 60
-  topic: CDZ/#
+  topic: CDZ
 
 mybatis:
   # mapper.xml文件扫描路径
@@ -38,7 +38,7 @@ mybatis:
 
 logging:
   level:
-    com.example.chargingPileSystem.mapper: info
+      com.example.chargingPileSystem.mapper: info
 
 
 
